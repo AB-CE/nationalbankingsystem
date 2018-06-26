@@ -4,7 +4,7 @@ from people import People
 
 population = 10
 num_firms = 3
-num_days = 7
+num_days = 50
 price_for_produce = 120
 price_for_labour = 100
 
@@ -37,7 +37,7 @@ for i in range(population):
     list_firmnumber.append({"firm_number":firmid})
 
 # creates population of people agents, includes the firm_number they are assigned/employed to
-group_of_people = simulation.build_agents(People, "person", agent_parameters=list_firmnumber)
+group_of_people = simulation.build_agents(People, "person", agent_parameters=list_firmnumber, total_firms=num_firms)
 
 economy_agents = group_of_people + group_of_firms # economy supergroup
 
@@ -53,8 +53,6 @@ for day in range(num_days):
     group_of_firms.production()
     group_of_people.buy_produce(price_for_produce)
     group_of_firms.sell_produce(price_for_produce)
-    #group_of_people[0].print_possessions()
-    #group_of_firms[0].print_possessions()
     total_net_worth_people = 0
     group_of_firms.panel_log(goods="money")
     print(list(group_of_people.getvalue()))

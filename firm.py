@@ -14,7 +14,7 @@ class Firm(abce.Agent):
 
     def buy_labour(self, labour_cost):
         for offer in self.get_offers("labour"):
-            if offer.price <= self.not_reserved("money") <= self.labour_cost:
+            if offer.price <= self.not_reserved("money") and offer.price <= labour_cost:
                 self.accept(offer)
 
     def production(self):
@@ -29,6 +29,7 @@ class Firm(abce.Agent):
 
     def print_possessions2(self):
         print('    ' + self.group + str(dict(self.possessions())))
+
 
 #    def logger(self):
 #        self.log("v", 5)
