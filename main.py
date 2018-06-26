@@ -6,6 +6,7 @@ population = 10
 num_firms = 3
 num_days = 7
 price_for_produce = 120
+price_for_labour = 100
 
 simulation = abce.Simulation(name="economy", processes=1)
 
@@ -19,10 +20,11 @@ for i in range(num_firms):
     count += 1
     if count <= remaining_people:
         list_employees.append(people_per_firm + 1)
-    else count > remaining_people:
+    elif count > remaining_people:
         list_employees.append(people_per_firm)
 
 # makes a list of dictionaries, for building all firm agents with correct num_people parameter
+num_people = []
 for i in range(num_firms):
     num_people.append({"num_people":list_employees[i]})
 
@@ -46,8 +48,8 @@ for day in range(num_days):
     group_of_firms.print_possessions2()
     print()
     group_of_people.add_labour()
-    group_of_firms.buy_labour()
-    group_of_people.sell_labour()
+    group_of_people.sell_labour(labour_cost=price_for_labour)
+    group_of_firms.buy_labour(labour_cost=price_for_labour)
     group_of_firms.production()
     group_of_people.buy_produce(price_for_produce)
     group_of_firms.sell_produce(price_for_produce)
@@ -56,7 +58,7 @@ for day in range(num_days):
     total_net_worth_people = 0
     group_of_firms.panel_log(goods="money")
     print(list(group_of_people.getvalue()))
-    for i in range(num_people):
+    for i in range(population):
         networthpeople = list(group_of_people.getvalue())[i] + price_for_produce*list(group_of_people.getvaluegoods())[i]
         total_net_worth_people += networthpeople
     print("net worth of people: ", total_net_worth_people)

@@ -12,9 +12,10 @@ class Firm(abce.Agent):
         self.labour = labour
         self.produce = produce
 
-    def buy_labour(self):
-        for i in range(self.num_people):
-            self.buy(("person", i), good="labour", quantity=1, price=100)
+    def buy_labour(self, labour_cost):
+        for offer in self.get_offers("labour"):
+            if offer.price <= self.not_reserved("money") <= self.labour_cost:
+                self.accept(offer)
 
     def production(self):
         self.create("produce", self["labour"])

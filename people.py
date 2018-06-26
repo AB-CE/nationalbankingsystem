@@ -15,10 +15,9 @@ class People(abce.Agent):
     def add_labour(self):
         self.create("labour", 1)
 
-    def sell_labour(self, price_for_labour=100):
-        for offer in self.get_offers("labour"):
-            if offer.price >= price_for_labour and self["labour"] >= 1:
-                self.accept(offer)
+
+    def sell_labour(self, labour_cost):
+        self.sell(self["firm_number"], good="labour", quantity=1, price=labour_cost)
 
     def buy_produce(self, cost):
         while self.not_reserved("money") >= cost:
