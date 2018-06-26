@@ -6,9 +6,11 @@ class People(abce.Agent):
     have 1 labour each day which they can trade for money,
     have an amount of money
     """
-    def init(self, money=0, labour=0, produce=0):
+    def init(self, firm_number, money=0, labour=0, produce=0):
         self.money = money
         self.labour = labour
+        self.firm_number = firm_number
+
 
     def add_labour(self):
         self.create("labour", 1)
@@ -26,6 +28,10 @@ class People(abce.Agent):
 
     def print_possessions(self):
         print('    ' + self.group + str(dict(self.possessions())))
+        self.log("money", self["money"])
 
     def getvalue(self):
         return self["money"]
+
+    def getvaluegoods(self):
+        return self["produce"]

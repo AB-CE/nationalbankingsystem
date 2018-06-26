@@ -1,4 +1,4 @@
-import abce
+import  abce
 
 class Firm(abce.Agent):
     """
@@ -26,6 +26,15 @@ class Firm(abce.Agent):
             if offer.price >= produce_price and self["produce"] >= 1:
                 self.accept(offer)
 
-    def print_possessions(self):
+    def print_possessions2(self):
         print('    ' + self.group + str(dict(self.possessions())))
+
+#    def logger(self):
+#        self.log("v", 5)
+
+    def getvalue(self):
+        return self["money"]
+
+    def getvaluegoods(self):
+        return self["produce"]
 
