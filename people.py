@@ -26,3 +26,6 @@ class People(abce.Agent):
 
     def print_possessions(self):
         print('    ' + self.group + str(dict(self.possessions())))
+
+    def getvalue(self):
+        return self["money"]

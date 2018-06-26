@@ -29,8 +29,9 @@ for day in range(num_days):
     group_of_people[0].print_possessions()
     group_of_firms[0].print_possessions()
     total_net_worth_people = 0
+    print(list(group_of_people.getvalue()))
     for i in range(num_people):
-        total_net_worth_people += group_of_people[i].self["money"]
+        total_net_worth_people += list(group_of_people.getvalue())[i]
     print("net worth of people: ", total_net_worth_people)
 
     print()
