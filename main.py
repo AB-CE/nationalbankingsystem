@@ -54,7 +54,7 @@ for day in range(num_days):
     group_of_people.buy_produce(price_for_produce)
     group_of_firms.sell_produce(price_for_produce)
     total_net_worth_people = 0
-    group_of_firms.panel_log(goods="money")
+    #group_of_firms.panel_log(goods="money")
     print(list(group_of_people.getvalue()))
     for i in range(population):
         networthpeople = list(group_of_people.getvalue())[i] + price_for_produce*list(group_of_people.getvaluegoods())[i]
@@ -68,3 +68,4 @@ for day in range(num_days):
 
 
 simulation.graph()
+simulation.path

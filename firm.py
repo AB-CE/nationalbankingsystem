@@ -29,6 +29,7 @@ class Firm(abce.Agent):
 
     def print_possessions2(self):
         print('    ' + self.group + str(dict(self.possessions())))
+        self.log("money", self["money"])
 
 
 #    def logger(self):
