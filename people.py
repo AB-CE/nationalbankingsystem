@@ -1,5 +1,5 @@
 import abce
-from random import randrange
+import random
 
 class People(abce.Agent):
     """
@@ -28,11 +28,12 @@ class People(abce.Agent):
 
     def buy_produce(self, cost):
         """makes buy offer produce to a random firm"""
+        random.seed()
         self.offer_price = cost
         quant = int(self.not_reserved("money")/self.offer_price)
         if self.not_reserved("money") >= self.offer_price:
             print("COST: ", cost)
-            offer = self.buy(("firm", randrange(self.total_firms)), good="produce", quantity=quant, price=cost)
+            offer = self.buy(("firm", random.randrange(self.total_firms)), good="produce", quantity=quant, price=cost)
             self.list_offers.append(offer)
 
     def check_rejection(self):

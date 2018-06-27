@@ -33,6 +33,10 @@ class Firm(abce.Agent):
         print(self["money"])
         ratio = 10000/self["money"]
         holder = ratio*self.new_price
+        if holder < 50:
+            holder = 50
+        elif holder > 300:
+            holder = 300
         self.new_price = int(holder)
         for offer in self.get_offers("produce"):
             if offer.price >= self.new_price and self["produce"] >= offer.quantity:

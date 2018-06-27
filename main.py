@@ -4,7 +4,7 @@ from people import People
 
 population = 10
 num_firms = 3
-num_days = 23
+num_days = 50
 price_for_produce = 50
 min_price_produce = 60
 price_for_labour = 100
