@@ -4,8 +4,9 @@ from people import People
 
 population = 10
 num_firms = 3
-num_days = 50
-price_for_produce = 120
+num_days = 23
+price_for_produce = 50
+min_price_produce = 60
 price_for_labour = 100
 
 simulation = abce.Simulation(name="economy", processes=1)
@@ -26,7 +27,7 @@ for i in range(num_firms):
 # makes a list of dictionaries, for building all firm agents with correct num_people parameter
 num_people = []
 for i in range(num_firms):
-    num_people.append({"num_people":list_employees[i]})
+    num_people.append({"num_people": list_employees[i]})
 
 group_of_firms = simulation.build_agents(Firm, "firm", agent_parameters=num_people)
 
@@ -37,7 +38,8 @@ for i in range(population):
     list_firmnumber.append({"firm_number":firmid})
 
 # creates population of people agents, includes the firm_number they are assigned/employed to
-group_of_people = simulation.build_agents(People, "person", agent_parameters=list_firmnumber, total_firms=num_firms)
+group_of_people = simulation.build_agents(People, "person", agent_parameters=list_firmnumber, total_firms=num_firms,
+                                          total_people=len(list_firmnumber))
 
 economy_agents = group_of_people + group_of_firms # economy supergroup
 
@@ -52,7 +54,9 @@ for day in range(num_days):
     group_of_firms.buy_labour(labour_cost=price_for_labour)
     group_of_firms.production()
     group_of_people.buy_produce(price_for_produce)
-    group_of_firms.sell_produce(price_for_produce)
+    group_of_firms.sell_produce()
+    group_of_people.check_rejection()
+    group_of_firms.sell_produce()
     total_net_worth_people = 0
     #group_of_firms.panel_log(goods="money")
     print(list(group_of_people.getvalue()))
@@ -69,3 +73,4 @@ for day in range(num_days):
 
 simulation.graph()
 simulation.path
+simulation.finalize()

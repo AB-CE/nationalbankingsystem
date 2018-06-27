@@ -8,12 +8,13 @@ class Firm(abce.Agent):
     Accepts buy offers from random agents
 
     """
-    def init(self, money=10000, num_people, labour=0, produce=0):
+    def init(self, money=10000, num_people=10, labour=0, produce=0, new_price=60):
         """creates a firm with 10000 money"""
         self.create("money", money)
         self.num_people = num_people
         self.labour = labour
         self.produce = produce
+        self.new_price = new_price
 
     def buy_labour(self, labour_cost):
         """accepts sell offers of labour from a person agent"""
@@ -23,15 +24,28 @@ class Firm(abce.Agent):
 
     def production(self):
         """creates one produce and destroys one labour"""
-        self.create("produce", self["labour"])
+        self.create("produce", 2*self["labour"])
         self.destroy("labour", self["labour"])
 
 
-    def sell_produce(self, produce_price):
+    def sell_produce(self):
         """accepts buy offer of produce from all person agents"""
+        print(self["money"])
+        ratio = 10000/self["money"]
+        holder = ratio*self.new_price
+        self.new_price = int(holder)
         for offer in self.get_offers("produce"):
-            if offer.price >= produce_price and self["produce"] >= 1:
+            if offer.price >= self.new_price and self["produce"] >= offer.quantity:
                 self.accept(offer)
+            elif offer.price < self.new_price and self["produce"] >= offer.quantity:
+                self.reject(offer)
+                self.send(offer.sender, topic="minprice", msg=self.new_price)
+            elif offer.price >= self.new_price and self["produce"] < offer.quantity:
+                self.reject(offer)
+                self.send(offer.sender, topic="maxquantity", msg=self["produce"])
+            else:
+                self.reject()
+
 
     def print_possessions2(self):
         """prints possessions and logs money belonging to a firm"""
