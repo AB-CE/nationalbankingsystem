@@ -16,7 +16,6 @@ class firm(abce.Agent):
         with a probability p
         - if inventory is high and price isn't below lower bound, lower price with
         a probability p
-
     """
     def init(self, money=0, inventory=0, ideal_num_workers=0, workers=0, price=0, wage=0,
              upper_inv=0, lower_inv=0, upper_price=0, lower_price=0):
@@ -42,9 +41,9 @@ class firm(abce.Agent):
         productivity = 1
         self.create("inventory", productivity*self.workers)
 
-    def determine_wage(self, demand):
+    def determine_wage(self):
         """
-
+        determines if the wage will be altered or not
         """
         excess = 1.1
         if self.ideal_num_workers >= self.workers:
@@ -59,7 +58,7 @@ class firm(abce.Agent):
 
     def determine_bounds(self, demand):
         """
-
+        determines the bound on the prices and inventory amounts
         :param demand:
         :return:
         """
