@@ -46,10 +46,12 @@ class firm(abce.Agent):
         """
 
         """
-
-        if self.ideal_num_workers != self.workers:
+        excess = 1.1
+        if self.ideal_num_workers >= self.workers:
             self.wage += 1
         elif self.ideal_num_workers == self.workers:
+            if self.get_messages("max_employees") >= excess*self.ideal_num_workers:
+                self.wage -= 1
 
             # get messages and find out how many workers were offered,
             # if num_offered > 1.1*ideal_num_workers:
