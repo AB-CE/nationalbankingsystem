@@ -19,9 +19,9 @@ class firm(abce.Agent):
     - pay workers
     - pay left over profits to workers
     """
-    def init(self, money, inventory, ideal_num_worker, workers, price, wage,
-             upper_inv, lower_inv, upper_price, lower_price, wage_increment,
-             price_increment):
+    def init(self, money=10, inventory=10, ideal_num_workers=10, workers=0, price=10, wage=10,
+             upper_inv=0, lower_inv=0, upper_price=0, lower_price=0, wage_increment=1,
+             price_increment=0):
         """
         initializes starting characteristics
         """
@@ -71,8 +71,8 @@ class firm(abce.Agent):
         const_upper = 1.5
         const_lower = 1.05
         marginal_cost = self.wage
-        self.upper_inv = phi_upper*demand
-        self.lower_inv = phi_lower*demand
+        self.upper_inv = phi_upper*list(demand)[self.id]
+        self.lower_inv = phi_lower*list(demand[self.id]
         self.upper_price = const_upper*marginal_cost
         self.lower_price = const_lower*marginal_cost
 
@@ -84,7 +84,7 @@ class firm(abce.Agent):
         """
         if self.inventory > self.upper_inv:
             self.ideal_num_workers -= 1
-        elif self.inventory < self.lower_inv
+        elif self.inventory < self.lower_inv:
             self.ideal_num_workers += 1
 
     def determine_price(self):
@@ -125,7 +125,7 @@ class firm(abce.Agent):
         if salary > self["money"]:
             salary = self["money"]
             self.wage -= self.wage_increment
-        give(person, "money", quantity=salary)
+        self.give(("people", 0), "money", quantity=salary)
 
     def pay_profits(self):
         """
@@ -136,5 +136,14 @@ class firm(abce.Agent):
         profits = self["money"] - buffer
         if profits > 0:
             give(person, "money", quantity=profits)
+
+    def getvalue_ideal_num_workers(self):
+        return self.ideal_num_workers
+
+    def getvalue_wage(self):
+        return self.wage
+
+    def getvalue_price(self):
+        return self.price
 
 
