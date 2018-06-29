@@ -19,9 +19,9 @@ class firm(abce.Agent):
     - pay workers
     - pay left over profits to workers
     """
-    def init(self, money=0, inventory=0, ideal_num_workers=0, workers=0, price=0, wage=0,
-             upper_inv=0, lower_inv=0, upper_price=0, lower_price=0, wage_increment=1,
-             price_increment=1):
+    def init(self, money, inventory, ideal_num_worker, workers, price, wage,
+             upper_inv, lower_inv, upper_price, lower_price, wage_increment,
+             price_increment):
         """
         initializes starting characteristics
         """
@@ -87,7 +87,7 @@ class firm(abce.Agent):
         elif self.inventory < self.lower_inv
             self.ideal_num_workers += 1
 
-    def determine_prices(self):
+    def determine_price(self):
         """
         compares the inventory with the upper and lower bounds and if the price is within
         the upper and lower price range
@@ -134,6 +134,7 @@ class firm(abce.Agent):
         num_days_buffer = 5
         buffer = num_days_buffer*self.wage*self.workers
         profits = self["money"] - buffer
-        give(person, "money", quantity=profits)
+        if profits > 0:
+            give(person, "money", quantity=profits)
 
 
