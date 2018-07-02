@@ -20,9 +20,9 @@ class Firm(abce.Agent):
     - pay workers
     - pay left over profits to workers
     """
-    def init(self, money=10000, inventory=10, ideal_num_workers=10, workers=0, price=10, wage=10,
+    def init(self, money=10000, inventory=10, ideal_num_workers=10, workers=0, price=20, wage=10,
              upper_inv=0, lower_inv=0, upper_price=0, lower_price=0, wage_increment=1,
-             price_increment=0):
+             price_increment=10):
         """
         initializes starting characteristics
         """
@@ -57,12 +57,15 @@ class Firm(abce.Agent):
         if the number of workers offered exceeded 110% of the ideal number then lower the wage
         """
         excess = 1.1
+        max_wage_change = 10
         if self.ideal_num_workers >= self.workers:
-            self.wage += 1
+            self.wage += random.uniform(0, max_wage_change)
             self.get_messages("max_employees")
         elif self.ideal_num_workers == self.workers:
             if self.get_messages("max_employees") >= excess*self.ideal_num_workers:
-                self.wage -= 1
+                self.wage -= random.uniform(0, max_wage_change)
+                if self.wage < 0:
+                    self.wage = 0
             else:
                 self.get_messages("max_employees")
         else:
@@ -94,11 +97,11 @@ class Firm(abce.Agent):
         if below the low bound for inventory then increase the ideal number of workers
         """
         if self.inventory > self.upper_inv:
-            self.ideal_num_workers -= random.randrange(0, 20)
+            self.ideal_num_workers -= 1.1*self.ideal_num_workers
             if self.ideal_num_workers < 0:
                 self.ideal_num_workers = 0
         elif self.inventory < self.lower_inv:
-            self.ideal_num_workers += random.randrange(0, 20)
+            self.ideal_num_workers += 1.1*self.ideal_num_workers
 
     def determine_price(self):
         """
@@ -144,7 +147,7 @@ class Firm(abce.Agent):
         """
         pays workers/bosses (same agent) the extra profits
         """
-        num_days_buffer = 5
+        num_days_buffer = 10
         buffer = num_days_buffer*self.wage*self.ideal_num_workers
         profits = self["money"] - buffer
         if profits > 0:
@@ -174,9 +177,5 @@ class Firm(abce.Agent):
 
     def end_work_day(self):
         """
-
-
         """
         self.destroy('workers')
-
-

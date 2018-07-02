@@ -94,6 +94,7 @@ class People(abce.Agent):
         self.log("money", self["money"])
         self.log("money", self["money"])
         self.log("money", self["money"])
+        self.log("workers", self["workers"])
 
 
     def getvalue(self):

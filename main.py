@@ -5,13 +5,13 @@ from people import People
 _population = 1000
 people_money = 200000
 
-num_firms = 10
-num_employees = 100
+num_firms = 20
+num_employees = 1000
 firm_money = 800000
 
-num_days = 500
+num_days = 3000
 L = 0.5
-demand = 4
+demand = num_employees / num_firms
 
 simulation = abce.Simulation(name='economy', processes=1)
 group_of_firms = simulation.build_agents(Firm, "firm", number=num_firms, money=firm_money,)
