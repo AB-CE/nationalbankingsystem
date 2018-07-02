@@ -1,7 +1,8 @@
 import abce
 import random
 
-class firm(abce.Agent):
+
+class Firm(abce.Agent):
     """
     Firm:
     - employs workers each round
@@ -19,13 +20,13 @@ class firm(abce.Agent):
     - pay workers
     - pay left over profits to workers
     """
-    def init(self, money=10, inventory=10, ideal_num_workers=10, workers=0, price=10, wage=10,
+    def init(self, money=10000, inventory=10, ideal_num_workers=10, workers=0, price=10, wage=10,
              upper_inv=0, lower_inv=0, upper_price=0, lower_price=0, wage_increment=1,
              price_increment=0):
         """
         initializes starting characteristics
         """
-        self.money = money
+        self.create("money", money)
         self.inventory = inventory
         self.ideal_num_workers = ideal_num_workers
         self.workers = workers
@@ -43,7 +44,11 @@ class firm(abce.Agent):
         produces goods to add to inventory based on number of workers and productivity
         """
         productivity = 1
-        self.create("inventory", productivity*self.workers)
+        before = self["produce"]
+        assert productivity*self["workers"] >= 0
+        self.create("produce", productivity*self["workers"])
+        self.log("production", self["produce"] - before)
+
 
     def determine_wage(self):
         """
@@ -54,9 +59,14 @@ class firm(abce.Agent):
         excess = 1.1
         if self.ideal_num_workers >= self.workers:
             self.wage += 1
+            self.get_messages("max_employees")
         elif self.ideal_num_workers == self.workers:
             if self.get_messages("max_employees") >= excess*self.ideal_num_workers:
                 self.wage -= 1
+            else:
+                self.get_messages("max_employees")
+        else:
+            self.get_messages("max_employees")
 
 
     def determine_bounds(self, demand):
@@ -72,9 +82,10 @@ class firm(abce.Agent):
         const_lower = 1.05
         marginal_cost = self.wage
         self.upper_inv = phi_upper*list(demand)[self.id]
-        self.lower_inv = phi_lower*list(demand[self.id]
-        self.upper_price = const_upper*marginal_cost
+        self.lower_inv = phi_lower*list(demand)[self.id]
         self.lower_price = const_lower*marginal_cost
+        self.upper_price = const_upper*marginal_cost
+
 
     def determine_workers(self):
         """
@@ -83,9 +94,11 @@ class firm(abce.Agent):
         if below the low bound for inventory then increase the ideal number of workers
         """
         if self.inventory > self.upper_inv:
-            self.ideal_num_workers -= 1
+            self.ideal_num_workers -= random.randrange(0, 20)
+            if self.ideal_num_workers < 0:
+                self.ideal_num_workers = 0
         elif self.inventory < self.lower_inv:
-            self.ideal_num_workers += 1
+            self.ideal_num_workers += random.randrange(0, 20)
 
     def determine_price(self):
         """
@@ -108,10 +121,10 @@ class firm(abce.Agent):
         sells the goods to the employees
         """
         for offer in self.get_offers("produce"):
-            if offer.price >= self.price and self["inventory"] >= offer.quantity:
+            if offer.price >= self.price and self["produce"] >= offer.quantity:
                 self.accept(offer)
-            elif offer.price >= self.price and self["inventory"] < offer.quantity:
-                self.accept(offer, quantity=self["inventory"])
+            elif offer.price >= self.price and self["produce"] < offer.quantity:
+                self.accept(offer, quantity=self["produce"])
             elif offer.price < self.price:
                 self.reject(offer)
 
@@ -125,25 +138,45 @@ class firm(abce.Agent):
         if salary > self["money"]:
             salary = self["money"]
             self.wage -= self.wage_increment
-        self.give(("people", 0), "money", quantity=salary)
+        self.give("people", "money", quantity=salary)
 
     def pay_profits(self):
         """
         pays workers/bosses (same agent) the extra profits
         """
         num_days_buffer = 5
-        buffer = num_days_buffer*self.wage*self.workers
+        buffer = num_days_buffer*self.wage*self.ideal_num_workers
         profits = self["money"] - buffer
         if profits > 0:
-            give(person, "money", quantity=profits)
+            self.give("people", "money", quantity=profits)
 
     def getvalue_ideal_num_workers(self):
-        return self.ideal_num_workers
+        return (self.name, self.ideal_num_workers)
 
     def getvalue_wage(self):
         return self.wage
 
+    def publish_vacencies(self):
+        return {"name": self.name, "number": self.ideal_num_workers, "wage": self.wage}
+
     def getvalue_price(self):
+        self.send_envelope('people', 'price', self.price)
         return self.price
+
+    def print_possessions(self):
+        """
+        prints possessions and logs money of a person agent
+        """
+        print('    ' + self.group + str(dict(self.possessions())))
+        self.log("money", self["money"])
+        self.log("produce", self["produce"])
+        self.log("workers", self["workers"])
+
+    def end_work_day(self):
+        """
+
+
+        """
+        self.destroy('workers')
 
 
