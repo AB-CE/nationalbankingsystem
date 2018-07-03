@@ -64,18 +64,19 @@ class People(abce.Agent):
                 firm_id = the number of the firm the people are trading with
         """
         q = self.find_q()
+        self.log('q', q)
 
         demand_list = []
         l = self.l
 
-        for firm in range(self.num_firms):
+        I = self.not_reserved('money')
+        for firm in range(self.num_firms):  # fix systematic advantage for 0 firm
             firm_price = float(self.price_dict['firm', firm])
-            I = self.not_reserved('money')
-            demand = int((I/q)*(q/firm_price) ** (1/(1-l)))
-            if I >= demand*firm_price:
+            demand = int((I / q) * (q / firm_price) ** (1 / (1 - l)))
+            if I >= demand * firm_price:
                 self.buy(('firm', firm), good='produce', quantity=demand, price=firm_price)
             else:
-                self.buy(('firm', firm), good='produce', quantity=(int(self['money']/firm_price)), price=firm_price)
+                self.buy(('firm', firm), good='produce', quantity=(int(self['money'] / firm_price)), price=firm_price)
             demand_list.append(demand)
         return demand_list
 
