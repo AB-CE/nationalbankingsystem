@@ -155,10 +155,12 @@ class Firm(abce.Agent):
         pays workers/bosses (same agent) the extra profits
         """
         num_days_buffer = 10
-        buffer = num_days_buffer*self.wage*self.ideal_num_workers
+        buffer = num_days_buffer * self.wage * self.ideal_num_workers
         profits = self["money"] - buffer
         if profits > 0:
             self.give("people", "money", quantity=profits)
+
+        self.log('dividends', max(0, profits))
 
     def getvalue_ideal_num_workers(self):
         return (self.name, self.ideal_num_workers)
