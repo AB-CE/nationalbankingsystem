@@ -17,10 +17,10 @@ class People(abce.Agent):
         - Otherwise, they will sell the maximum
     """
 
-    def init(self, money=0, produce=0, population=0, workers=0, l=0.5, price_dict={}, num_firms=0):
+    def init(self, people_money=0, produce=0, population=0, workers=0, l=0.5, price_dict={}, num_firms=20, **_):
         self.name = "people"
         self.population = population
-        self.create('money', money)
+        self.create('money', people_money)
         self.produce = produce
         self.create('workers', workers)
         self.num_firms = num_firms
@@ -111,8 +111,6 @@ class People(abce.Agent):
         prints possessions and logs money of a person agent
         """
         print('    ' + self.group + str(dict(self.possessions())))
-        self.log("money", self["money"])
-        self.log("money", self["money"])
         self.log("money", self["money"])
         self.log("workers", self["workers"])
 

@@ -1,25 +1,35 @@
 import abce
 from firm import Firm
 from people import People
+params = dict(
+    _population = 1000,
+    people_money = 1000,
+    num_firms = 20,
+    num_employees = 1000,
+    firm_money = 2000,
 
-_population = 1000
-people_money = 1000
+    num_days = 1000,
 
-num_firms = 20
-num_employees = 1000
-firm_money = 2000
+    l = 0.5, # constant from CS equation
 
-num_days = 1000
-L = 0.5
-demand = num_employees / num_firms
+    num_days_buffer = 10, # number of days worth of wages a firm will keep after giving profits
 
+    probability = 75,  # 75% chance of increasing price when conditions are satisfied
+
+    phi_upper = 10, # phi_upper * demand gives upper bound to inventory
+    phi_lower = 2,
+    const_upper = 1.5, # const_upper * marginal_cost gives upper bound to price
+    const_lower = 1.05,
+
+    excess = 1.1 # if number of workers offered to work for firm exceeds 110% of ideal number, raise wage
+)
 simulation = abce.Simulation(name='economy', processes=1)
-group_of_firms = simulation.build_agents(Firm, "firm", number=num_firms, money=firm_money,)
-people = simulation.build_agents(People, "people", number=1, population=_population, money=people_money,
-                                 num_firms=num_firms)
+group_of_firms = simulation.build_agents(Firm, "firm", number=params["num_firms"], **params)
+people = simulation.build_agents(People, "people", number=1, population=params["_population"],
+                                 money=params["people_money"], **params)
 
 
-for r in range(num_days):
+for r in range(params["num_days"]):
     simulation.time = r
 
     group_of_firms.panel_log(variables=['wage', 'ideal_num_workers'], goods=['workers'])

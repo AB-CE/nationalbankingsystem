@@ -20,13 +20,14 @@ class Firm(abce.Agent):
     - pay workers
     - pay left over profits to workers
     """
-    def init(self, money=10000, ideal_num_workers=10, price=20, wage=10,
-             upper_inv=0, lower_inv=0, upper_price=0, lower_price=0, wage_increment=10,
-             price_increment=10):
+    def init(self, firm_money=10000, ideal_num_workers=10, price=20, wage=10, upper_inv=0,
+             lower_inv=0, upper_price=0, lower_price=0, wage_increment=10, price_increment=10,
+             probability=75, phi_upper=10, phi_lower=2, const_upper=1.5, const_lower=1.05,
+             excess=1.1, num_days_buffer=10, **_):
         """
         initializes starting characteristics
         """
-        self.create("money", money)
+        self.create("money", firm_money)
         self.ideal_num_workers = ideal_num_workers
         self.price = price
         self.wage = wage
@@ -36,6 +37,13 @@ class Firm(abce.Agent):
         self.lower_price = lower_price
         self.wage_increment = wage_increment
         self.price_increment = price_increment
+        self.probability = probability
+        self.phi_upper = phi_upper
+        self.phi_lower = phi_lower
+        self.const_upper = const_upper
+        self.const_lower = const_lower
+        self.excess = excess
+        self.num_days_buffer = num_days_buffer
 
     def production(self):
         """
@@ -43,10 +51,9 @@ class Firm(abce.Agent):
         """
         productivity = 1
         before = self["produce"]
-        assert productivity*self["workers"] >= 0
+        assert productivity * self["workers"] >= 0
         self.create("produce", productivity*self["workers"])
         self.log("production", self["produce"] - before)
-
 
     def determine_wage(self):
         """
@@ -54,14 +61,13 @@ class Firm(abce.Agent):
         if the ideal number of workers wasn't satisfied then raises the wage
         if the number of workers offered exceeded 110% of the ideal number then lower the wage
         """
-        excess = 1.1
-        max_wage_change = 10
+        max_wage_change = self.wage_increment
         if self.ideal_num_workers > self['workers']:
             self.wage += random.uniform(0, max_wage_change)
             self.get_messages("max_employees")
         elif self.ideal_num_workers == self['workers']:
             max_employees = self.get_messages("max_employees")[0]
-            if max_employees > excess * self.ideal_num_workers:
+            if max_employees > self.excess * self.ideal_num_workers:
                 self.wage -= random.uniform(0, max_wage_change)
                 if self.wage < 0:
                     self.wage = 0
@@ -78,15 +84,13 @@ class Firm(abce.Agent):
         Args:
             demand: number of units of goods demanded by people from firm
         """
-        phi_upper = 10
-        phi_lower = 2
-        const_upper = 1.5
-        const_lower = 1.05
+
+
         marginal_cost = self.wage
-        self.upper_inv = phi_upper*list(demand)[self.id]
-        self.lower_inv = phi_lower*list(demand)[self.id]
-        self.lower_price = const_lower*marginal_cost
-        self.upper_price = const_upper*marginal_cost
+        self.upper_inv = self.phi_upper*list(demand)[self.id]
+        self.lower_inv = self.phi_lower*list(demand)[self.id]
+        self.lower_price = self.const_lower*marginal_cost
+        self.upper_price = self.const_upper*marginal_cost
         self.log('upper_inv', self.upper_inv)
         self.log('lower_inv', self.lower_inv)
         self.log('demand', list(demand)[self.id])
@@ -155,8 +159,7 @@ class Firm(abce.Agent):
         """
         pays workers/bosses (same agent) the extra profits
         """
-        num_days_buffer = 10
-        buffer = num_days_buffer * self.wage * self.ideal_num_workers
+        buffer = self.num_days_buffer * self.wage * self.ideal_num_workers
         profits = self["money"] - buffer
         if profits > 0:
             self.give("people", "money", quantity=profits)
