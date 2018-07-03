@@ -137,7 +137,7 @@ class Firm(abce.Agent):
         if the salary owed is greater than owned money:
         gives out all money and reduces wage by 1 unit
         """
-        salary = self.wage*self.workers
+        salary = self.wage * self['workers']
         if salary > self["money"]:
             salary = self["money"]
             self.wage -= self.wage_increment
