@@ -98,11 +98,11 @@ class Firm(abce.Agent):
         if below the low bound for inventory then increase the ideal number of workers
         """
         if self['produce'] > self.upper_inv:
-            self.ideal_num_workers -= 1.1 * self.ideal_num_workers
+            self.ideal_num_workers -= 0.1 * self.ideal_num_workers
             if self.ideal_num_workers < 0:
                 self.ideal_num_workers = 0
         elif self['produce'] < self.lower_inv:
-            self.ideal_num_workers += 1.1 * self.ideal_num_workers
+            self.ideal_num_workers += 0.1 * self.ideal_num_workers
 
     def determine_price(self):
         """
