@@ -20,14 +20,13 @@ class Firm(abce.Agent):
     - pay workers
     - pay left over profits to workers
     """
-    def init(self, money=10000, inventory=10, ideal_num_workers=10, price=20, wage=10,
+    def init(self, money=10000, ideal_num_workers=10, price=20, wage=10,
              upper_inv=0, lower_inv=0, upper_price=0, lower_price=0, wage_increment=1,
              price_increment=10):
         """
         initializes starting characteristics
         """
         self.create("money", money)
-        self.inventory = inventory
         self.ideal_num_workers = ideal_num_workers
         self.price = price
         self.wage = wage
@@ -87,6 +86,8 @@ class Firm(abce.Agent):
         self.lower_inv = phi_lower*list(demand)[self.id]
         self.lower_price = const_lower*marginal_cost
         self.upper_price = const_upper*marginal_cost
+        self.log('upper_inv', self.upper_inv)
+        self.log('lower_inv', self.lower_inv)
 
 
     def determine_workers(self):
@@ -95,12 +96,12 @@ class Firm(abce.Agent):
         if above the high bound for inventory then decrease the ideal number of workers
         if below the low bound for inventory then increase the ideal number of workers
         """
-        if self.inventory > self.upper_inv:
-            self.ideal_num_workers -= 1.1*self.ideal_num_workers
+        if self['produce'] > self.upper_inv:
+            self.ideal_num_workers -= 1.1 * self.ideal_num_workers
             if self.ideal_num_workers < 0:
                 self.ideal_num_workers = 0
-        elif self.inventory < self.lower_inv:
-            self.ideal_num_workers += 1.1*self.ideal_num_workers
+        elif self['produce'] < self.lower_inv:
+            self.ideal_num_workers += 1.1 * self.ideal_num_workers
 
     def determine_price(self):
         """
@@ -111,12 +112,14 @@ class Firm(abce.Agent):
         if the inventory is above the upper bound then decrease price with a probability
         """
         probability = 75 # 75% chance that price is changed given satisfied conditions
-        if self.inventory < self.lower_inv and self.price < self.upper_price:
+        if self['produce'] < self.lower_inv and self.price < self.upper_price:
             if random.randint(1, 100) < probability:
-                self.price += self.price_increment
-        elif self.inventory > self.upper_inv and self.price > self.lower_price:
+                self.price += random.uniform(0, self.price_increment)
+        elif self['produce'] > self.upper_inv and self.price > self.lower_price:
             if random.randint(1, 100) < probability:
-                self.price -= self.price_increment
+                self.price -= random.uniform(0, self.price_increment)
+                self.price = max(self.lower_price, self.price)
+        self.log('price', self.price)
 
     def sell_goods(self):
         """
