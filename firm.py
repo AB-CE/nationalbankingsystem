@@ -129,10 +129,13 @@ class Firm(abce.Agent):
         for offer in self.get_offers("produce"):
             if offer.price >= self.price and self["produce"] >= offer.quantity:
                 self.accept(offer)
+                self.log('sales', offer.quantity)
             elif offer.price >= self.price and self["produce"] < offer.quantity:
                 self.accept(offer, quantity=self["produce"])
+                self.log('sales', self["produce"])
             elif offer.price < self.price:
                 self.reject(offer)
+                self.log('sales', 0)
 
     def pay_workers(self):
         """
