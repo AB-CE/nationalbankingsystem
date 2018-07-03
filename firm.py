@@ -147,6 +147,7 @@ class Firm(abce.Agent):
         if salary > self["money"]:
             salary = self["money"]
             self.wage -= self.wage_increment
+            self.wage = max(0, self.wage)
         self.give("people", "money", quantity=salary)
 
     def pay_profits(self):
