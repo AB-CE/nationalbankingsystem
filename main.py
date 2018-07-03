@@ -18,24 +18,16 @@ group_of_firms = simulation.build_agents(Firm, "firm", number=num_firms, money=f
 people = simulation.build_agents(People, "people", number=1, population=_population, money=people_money,
                                  num_firms=num_firms)
 
-group_of_firms.determine_bounds([demand] * num_firms)
-
-
 
 for r in range(num_days):
     simulation.time = r
 
-    group_of_firms.panel_log(variables=['wage', 'price', 'ideal_num_workers'], goods=['workers'])
+    group_of_firms.panel_log(variables=['wage', 'ideal_num_workers'], goods=['workers'])
     people.start_work_day()
-
-    group_of_firms.determine_workers()
-    group_of_firms.determine_price()
 
     vacancies_list = list(group_of_firms.publish_vacencies())
 
     people.send_workers(vacancies_list)
-
-
 
     group_of_firms.production()
     demand_list = []
@@ -53,6 +45,8 @@ for r in range(num_days):
     people.print_possessions()
     group_of_firms.print_possessions()
     group_of_firms.determine_wage()
+    group_of_firms.determine_workers()
+    group_of_firms.determine_price()
     group_of_firms.end_work_day()
     people.consumption()
 
