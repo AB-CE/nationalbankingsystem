@@ -43,7 +43,18 @@ class People(abce.Agent):
         self.log("consumption", self["produce"])
         self.destroy("produce")
 
-    def buy_produce(self, q):
+    def find_q(self):
+        """
+        returns the parameter q as defined in the C-D utility function
+        """
+        L = 0.5 # constant
+        q = 0
+        for id in range(self.num_firms):
+            q += self.price_dict[('firm', id)] ** (1 / (L-1))
+        q = float(q)
+        return q
+
+    def buy_produce(self):
         """
         Calculates the demand from each firm and makes buy offers for produce of this amount at this value, or as much
         as the people can afford
@@ -52,6 +63,8 @@ class People(abce.Agent):
                 firm_price = the price the firm is selling the goods for
                 firm_id = the number of the firm the people are trading with
         """
+        q = self.find_q()
+
         demand_list = []
         l = self.l
 
@@ -108,17 +121,6 @@ class People(abce.Agent):
         returns the amount of produce owned by the person agent
         """
         return self["produce"]
-
-    def find_q(self):
-        """
-        returns the parameter q as defined in the C-D utility function
-        """
-        L = 0.5 # constant
-        q = 0
-        for id in range(self.num_firms):
-            q += self.price_dict[('firm', id)] ** (1 / (L-1))
-        q = float(q)
-        return q
 
     def get_prices(self):
         """

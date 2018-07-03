@@ -42,7 +42,7 @@ for r in range(num_days):
     group_of_firms.getvalue_price()
     people.get_prices()
 
-    demand = people.buy_produce(q=list(people.find_q())[0])
+    demand = people.buy_produce()
     demand_list = list(demand)[0]
 
     group_of_firms.sell_goods()
