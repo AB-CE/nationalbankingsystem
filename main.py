@@ -30,6 +30,7 @@ for r in range(num_days):
     people.send_workers(vacancies_list)
 
     group_of_firms.production()
+    group_of_firms.pay_workers()
     demand_list = []
     group_of_firms.getvalue_price()
     people.get_prices()
@@ -38,7 +39,6 @@ for r in range(num_days):
     demand_list = list(demand)[0]
 
     group_of_firms.sell_goods()
-    group_of_firms.pay_workers()
     group_of_firms.pay_profits()
     people.end_work_day()
     group_of_firms.determine_bounds(demand=demand_list)
