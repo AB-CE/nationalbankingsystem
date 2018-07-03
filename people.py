@@ -72,12 +72,10 @@ class People(abce.Agent):
         I = self.not_reserved('money')
         for firm in range(self.num_firms):  # fix systematic advantage for 0 firm
             firm_price = float(self.price_dict['firm', firm])
-            demand = int((I / q) * (q / firm_price) ** (1 / (1 - l)))
-            if I >= demand * firm_price:
-                self.buy(('firm', firm), good='produce', quantity=demand, price=firm_price)
-            else:
-                self.buy(('firm', firm), good='produce', quantity=(int(self['money'] / firm_price)), price=firm_price)
+            demand = (I / q) * (q / firm_price) ** (1 / (1 - l))
+            self.buy(('firm', firm), good='produce', quantity=demand, price=firm_price)
             demand_list.append(demand)
+        self.log('total_demand', sum(demand_list))
         return demand_list
 
     def send_workers(self, vacancies_list):
@@ -95,8 +93,8 @@ class People(abce.Agent):
             firm = vacancies["name"]
             willing_workers = self.population * (vacancies["wage"] / sum_wages)
             if vacancies["number"] <= willing_workers:
-               self.send(firm, 'max_employees', willing_workers)
-               self.give(firm, good='workers', quantity=vacancies["number"])
+                self.send(firm, 'max_employees', willing_workers)
+                self.give(firm, good='workers', quantity=vacancies["number"])
             else:
                 self.give(firm, good='workers', quantity=willing_workers)
 
