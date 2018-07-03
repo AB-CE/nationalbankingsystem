@@ -25,6 +25,7 @@ group_of_firms.determine_bounds([demand] * num_firms)
 for r in range(num_days):
     simulation.time = r
 
+    group_of_firms.panel_log(variables=['wage', 'price', 'ideal_num_workers'], goods=['workers'])
     people.start_work_day()
 
     group_of_firms.determine_workers()
