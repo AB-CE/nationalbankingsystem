@@ -78,8 +78,8 @@ class Firm(abce.Agent):
         Args:
             demand: number of units of goods demanded by people from firm
         """
-        phi_upper = 0.8
-        phi_lower = 0.2
+        phi_upper = 10
+        phi_lower = 2
         const_upper = 1.5
         const_lower = 1.05
         marginal_cost = self.wage
