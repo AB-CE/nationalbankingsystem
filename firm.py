@@ -56,11 +56,12 @@ class Firm(abce.Agent):
         """
         excess = 1.1
         max_wage_change = 10
-        if self.ideal_num_workers >= self['workers']:
+        if self.ideal_num_workers > self['workers']:
             self.wage += random.uniform(0, max_wage_change)
             self.get_messages("max_employees")
         elif self.ideal_num_workers == self['workers']:
-            if self.get_messages("max_employees") >= excess*self.ideal_num_workers:
+            max_employees = self.get_messages("max_employees")[0]
+            if max_employees >= excess*self.ideal_num_workers:
                 self.wage -= random.uniform(0, max_wage_change)
                 if self.wage < 0:
                     self.wage = 0
