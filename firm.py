@@ -89,6 +89,7 @@ class Firm(abce.Agent):
         self.upper_price = const_upper*marginal_cost
         self.log('upper_inv', self.upper_inv)
         self.log('lower_inv', self.lower_inv)
+        self.log('demand', list(demand)[self.id])
 
 
     def determine_workers(self):
