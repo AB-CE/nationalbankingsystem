@@ -9,7 +9,7 @@ num_firms = 20
 num_employees = 1000
 firm_money = 800000
 
-num_days = 3000
+num_days = 1000
 L = 0.5
 demand = num_employees / num_firms
 
@@ -27,7 +27,6 @@ for r in range(num_days):
 
     people.start_work_day()
 
-    group_of_firms.determine_wage()
     group_of_firms.determine_workers()
     group_of_firms.determine_price()
 
@@ -52,6 +51,7 @@ for r in range(num_days):
     group_of_firms.determine_bounds(demand=demand_list)
     people.print_possessions()
     group_of_firms.print_possessions()
+    group_of_firms.determine_wage()
     group_of_firms.end_work_day()
     people.consumption()
 

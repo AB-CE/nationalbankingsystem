@@ -20,7 +20,7 @@ class Firm(abce.Agent):
     - pay workers
     - pay left over profits to workers
     """
-    def init(self, money=10000, inventory=10, ideal_num_workers=10, workers=0, price=20, wage=10,
+    def init(self, money=10000, inventory=10, ideal_num_workers=10, price=20, wage=10,
              upper_inv=0, lower_inv=0, upper_price=0, lower_price=0, wage_increment=1,
              price_increment=10):
         """
@@ -29,7 +29,6 @@ class Firm(abce.Agent):
         self.create("money", money)
         self.inventory = inventory
         self.ideal_num_workers = ideal_num_workers
-        self.workers = workers
         self.price = price
         self.wage = wage
         self.upper_inv = upper_inv
@@ -58,10 +57,10 @@ class Firm(abce.Agent):
         """
         excess = 1.1
         max_wage_change = 10
-        if self.ideal_num_workers >= self.workers:
+        if self.ideal_num_workers >= self['workers']:
             self.wage += random.uniform(0, max_wage_change)
             self.get_messages("max_employees")
-        elif self.ideal_num_workers == self.workers:
+        elif self.ideal_num_workers == self['workers']:
             if self.get_messages("max_employees") >= excess*self.ideal_num_workers:
                 self.wage -= random.uniform(0, max_wage_change)
                 if self.wage < 0:
