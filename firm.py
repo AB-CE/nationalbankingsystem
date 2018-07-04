@@ -20,21 +20,13 @@ class Firm(abce.Agent):
     - pay workers
     - pay left over profits to workers
     """
-    def init(self, firm_money=10000, ideal_num_workers=10, price=20, wage=10, upper_inv=0,
-             lower_inv=0, upper_price=0, lower_price=0, wage_increment=10, price_increment=10,
-             probability=75, phi_upper=10, phi_lower=2, const_upper=1.5, const_lower=1.05,
-             excess=1.1, num_days_buffer=10, **_):
+    def init(self, firm_money, wage_increment, price_increment,
+             probability, phi_upper, phi_lower, const_upper, const_lower,
+             excess, num_days_buffer, **_):
         """
         initializes starting characteristics
         """
         self.create("money", firm_money)
-        self.ideal_num_workers = ideal_num_workers
-        self.price = price
-        self.wage = wage
-        self.upper_inv = upper_inv
-        self.lower_inv = lower_inv
-        self.upper_price = upper_price
-        self.lower_price = lower_price
         self.wage_increment = wage_increment
         self.price_increment = price_increment
         self.probability = probability
@@ -44,6 +36,14 @@ class Firm(abce.Agent):
         self.const_lower = const_lower
         self.excess = excess
         self.num_days_buffer = num_days_buffer
+
+        self.ideal_num_workers = 10
+        self.price = 20
+        self.wage = 10
+        self.upper_inv = 0
+        self.lower_inv = 0
+        self.upper_price = 0
+        self.lower_price = 0
 
     def production(self):
         """

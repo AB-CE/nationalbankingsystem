@@ -2,26 +2,28 @@ import abce
 from firm import Firm
 from people import People
 params = dict(
-    _population = 1000,
-    people_money = 1000,
-    num_firms = 20,
-    num_employees = 1000,
-    firm_money = 2000,
+    _population=1000,
+    people_money=1000,
+    num_firms=20,
+    num_employees=1000,
+    firm_money=2000,
 
-    num_days = 1000,
+    num_days=1000,
 
-    l = 0.5, # constant from CS equation
+    l=0.5, # constant from CS equation
 
-    num_days_buffer = 10, # number of days worth of wages a firm will keep after giving profits
+    num_days_buffer=10, # number of days worth of wages a firm will keep after giving profits
 
-    probability = 75,  # 75% chance of increasing price when conditions are satisfied
+    probability=75,  # 75% chance of increasing price when conditions are satisfied
 
-    phi_upper = 10, # phi_upper * demand gives upper bound to inventory
-    phi_lower = 2,
-    const_upper = 1.5, # const_upper * marginal_cost gives upper bound to price
-    const_lower = 1.05,
+    phi_upper=10, # phi_upper * demand gives upper bound to inventory
+    phi_lower=2,
+    const_upper=1.5, # const_upper * marginal_cost gives upper bound to price
+    const_lower=1.05,
 
-    excess = 1.1 # if number of workers offered to work for firm exceeds 110% of ideal number, raise wage
+    excess=1.1, # if number of workers offered to work for firm exceeds 110% of ideal number, raise wage
+    wage_increment=10,
+    price_increment=10
 )
 simulation = abce.Simulation(name='economy', processes=1)
 group_of_firms = simulation.build_agents(Firm, "firm", number=params["num_firms"], **params)

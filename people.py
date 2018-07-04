@@ -1,5 +1,6 @@
 import abce
 
+
 class People(abce.Agent):
 
     """
@@ -17,14 +18,13 @@ class People(abce.Agent):
         - Otherwise, they will sell the maximum
     """
 
-    def init(self, people_money=0, produce=0, population=0, workers=0, l=0.5, price_dict={}, num_firms=20, **_):
+    def init(self, people_money, population, l, num_firms, **_):
         self.name = "people"
         self.population = population
         self.create('money', people_money)
-        self.produce = produce
-        self.create('workers', workers)
+        self.produce = 0
         self.num_firms = num_firms
-        self.price_dict = price_dict
+        self.price_dict = {}
         self.l = l
 
     def start_work_day(self):
