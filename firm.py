@@ -91,7 +91,7 @@ class Firm(abce.Agent):
         self.log('lower_inv', self.lower_inv)
         self.log('demand', list(demand)[self.id])
 
-    def determine_workers(self):
+    def determine_workers_to_be_hired(self):
         """
         compares the inventory with the upper and lower bounds
         if above the high bound for inventory then decrease the ideal number of workers
@@ -179,7 +179,7 @@ class Firm(abce.Agent):
         self.log("produce", self["produce"])
         self.log("workers", self["workers"])
 
-    def end_work_day(self):
+    def destroy_unused_labor(self):
         """
         """
         self.destroy('workers')

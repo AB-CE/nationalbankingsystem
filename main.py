@@ -10,16 +10,16 @@ params = dict(
 
     num_days=1000,
 
-    l=0.5, # constant from CS equation
+    l=0.5,  # constant from CS equation
 
     num_days_buffer=10, # number of days worth of wages a firm will keep after giving profits
 
-    phi_upper=10, # phi_upper * demand gives upper bound to inventory
+    phi_upper=10,  # phi_upper * demand gives upper bound to inventory
     phi_lower=2,
-    const_upper=1.5, # const_upper * marginal_cost gives upper bound to price
+    const_upper=1.5,  # const_upper * marginal_cost gives upper bound to price
     const_lower=1.05,
 
-    excess=1.1, # if number of workers offered to work for firm exceeds 110% of ideal number, raise wage
+    excess=1.1,  # if number of workers offered to work for firm exceeds 110% of ideal number, raise wage
     wage_increment=10,
     price_increment=10
 )
@@ -32,7 +32,7 @@ for r in range(params["num_days"]):
     simulation.time = r
 
     group_of_firms.panel_log(variables=['wage', 'ideal_num_workers'], goods=['workers'])
-    people.start_work_day()
+    people.create_labor()
 
     vacancies_list = list(group_of_firms.publish_vacencies())
 
@@ -43,17 +43,15 @@ for r in range(params["num_days"]):
     group_of_firms.pay_profits()
     group_of_firms.send_prices()
     people.get_prices()
-    demand = people.buy_produce()
+    demand = people.buy_goods()
 
     group_of_firms.sell_goods()
-    people.end_work_day()
     group_of_firms.determine_bounds(demand=list(demand)[0])
-    people.print_possessions()
-    group_of_firms.print_possessions()
+    (group_of_firms + people).print_possessions()
     group_of_firms.determine_wage()
-    group_of_firms.determine_workers()
+    group_of_firms.determine_workers_to_be_hired()
     group_of_firms.determine_price()
-    group_of_firms.end_work_day()
+    (people + group_of_firms).destroy_unused_labor()
     people.consumption()
 
 print('done')

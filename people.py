@@ -27,13 +27,13 @@ class People(abce.Agent):
         self.price_dict = {}
         self.l = l
 
-    def start_work_day(self):
+    def create_labor(self):
         """
         creates labour to add to the people's inventory
         """
         self.create('workers', self.population)
 
-    def end_work_day(self):
+    def destroy_unused_labor(self):
         """
         destroys all labour
         """
@@ -54,7 +54,7 @@ class People(abce.Agent):
         q = float(q) ** ((L - 1) / L)
         return q
 
-    def buy_produce(self):
+    def buy_goods(self):
         """
         Calculates the demand from each firm and makes buy offers for produce of this amount at this value, or as much
         as the people can afford
