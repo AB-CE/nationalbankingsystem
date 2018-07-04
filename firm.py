@@ -59,20 +59,17 @@ class Firm(abce.Agent):
         if the ideal number of workers wasn't satisfied then raises the wage
         if the number of workers offered exceeded 110% of the ideal number then lower the wage
         """
+        messages = self.get_messages("max_employees")
         max_wage_change = self.wage_increment
         if self.ideal_num_workers > self['workers']:
             self.wage += random.uniform(0, max_wage_change)
-            self.get_messages("max_employees")
+
         elif self.ideal_num_workers == self['workers']:
-            max_employees = self.get_messages("max_employees")[0]
+            max_employees = messages[0]
             if max_employees > self.excess * self.ideal_num_workers:
                 self.wage -= random.uniform(0, max_wage_change)
                 if self.wage < 0:
                     self.wage = 0
-            else:
-                self.get_messages("max_employees")
-        else:
-            self.get_messages("max_employees")
 
     def determine_bounds(self, demand):
         """
