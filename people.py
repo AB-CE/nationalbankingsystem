@@ -47,11 +47,11 @@ class People(abce.Agent):
         """
         returns the parameter q as defined in the C-D utility function
         """
-        L = 0.5 # constant
+        L = self.l
         q = 0
         for id in range(self.num_firms):
-            q += self.price_dict[('firm', id)] ** (1 / (L-1))
-        q = float(q)
+            q += self.price_dict[('firm', id)] ** (L / (L - 1))
+        q = float(q) ** ((L - 1) / L)
         return q
 
     def buy_produce(self):
