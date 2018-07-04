@@ -3,11 +3,11 @@ from firm import Firm
 from people import People
 
 _population = 1000
-people_money = 200000
+people_money = 1000
 
 num_firms = 20
 num_employees = 1000
-firm_money = 800000
+firm_money = 2000
 
 num_days = 1000
 L = 0.5
@@ -31,15 +31,15 @@ for r in range(num_days):
 
     group_of_firms.production()
     group_of_firms.pay_workers()
+    group_of_firms.pay_profits()
     demand_list = []
-    group_of_firms.getvalue_price()
+    group_of_firms.send_prices()
     people.get_prices()
 
     demand = people.buy_produce()
     demand_list = list(demand)[0]
 
     group_of_firms.sell_goods()
-    group_of_firms.pay_profits()
     people.end_work_day()
     group_of_firms.determine_bounds(demand=demand_list)
     people.print_possessions()

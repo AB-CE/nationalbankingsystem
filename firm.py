@@ -21,7 +21,7 @@ class Firm(abce.Agent):
     - pay left over profits to workers
     """
     def init(self, money=10000, ideal_num_workers=10, price=20, wage=10,
-             upper_inv=0, lower_inv=0, upper_price=0, lower_price=0, wage_increment=1,
+             upper_inv=0, lower_inv=0, upper_price=0, lower_price=0, wage_increment=10,
              price_increment=10):
         """
         initializes starting characteristics
@@ -61,7 +61,7 @@ class Firm(abce.Agent):
             self.get_messages("max_employees")
         elif self.ideal_num_workers == self['workers']:
             max_employees = self.get_messages("max_employees")[0]
-            if max_employees >= excess*self.ideal_num_workers:
+            if max_employees > excess * self.ideal_num_workers:
                 self.wage -= random.uniform(0, max_wage_change)
                 if self.wage < 0:
                     self.wage = 0
@@ -113,12 +113,12 @@ class Firm(abce.Agent):
         if the inventory is below the lower bound then increase price with a probability
         if the inventory is above the upper bound then decrease price with a probability
         """
-        probability = 75 # 75% chance that price is changed given satisfied conditions
+        probability = 100 # 75% chance that price is changed given satisfied conditions
         if self['produce'] < self.lower_inv and self.price < self.upper_price:
-            if random.randint(1, 100) < probability:
+            if random.randint(1, 100) <= probability:
                 self.price += random.uniform(0, self.price_increment)
         elif self['produce'] > self.upper_inv and self.price > self.lower_price:
-            if random.randint(1, 100) < probability:
+            if random.randint(1, 100) <= probability:
                 self.price -= random.uniform(0, self.price_increment)
                 self.price = max(self.lower_price, self.price)
         self.log('price', self.price)
@@ -132,8 +132,8 @@ class Firm(abce.Agent):
                 self.accept(offer)
                 self.log('sales', offer.quantity)
             elif offer.price >= self.price and self["produce"] < offer.quantity:
-                self.accept(offer, quantity=self["produce"])
                 self.log('sales', self["produce"])
+                self.accept(offer, quantity=self["produce"])
             elif offer.price < self.price:
                 self.reject(offer)
                 self.log('sales', 0)
@@ -172,7 +172,7 @@ class Firm(abce.Agent):
     def publish_vacencies(self):
         return {"name": self.name, "number": self.ideal_num_workers, "wage": self.wage}
 
-    def getvalue_price(self):
+    def send_prices(self):
         self.send_envelope('people', 'price', self.price)
         return self.price
 
@@ -180,7 +180,6 @@ class Firm(abce.Agent):
         """
         prints possessions and logs money of a person agent
         """
-        print('    ' + self.group + str(dict(self.possessions())))
         self.log("money", self["money"])
         self.log("produce", self["produce"])
         self.log("workers", self["workers"])
