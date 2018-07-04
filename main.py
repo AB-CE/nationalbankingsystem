@@ -16,8 +16,8 @@ params = dict(
 
     phi_upper=10,  # phi_upper * demand gives upper bound to inventory
     phi_lower=2,
-    const_upper=1.5,  # const_upper * marginal_cost gives upper bound to price
-    const_lower=1.05,
+    const_upper=1000000,  # const_upper * marginal_cost gives upper bound to price
+    const_lower=1.0,
 
     excess=1.1,  # if number of workers offered to work for firm exceeds 110% of ideal number, raise wage
     wage_increment=10,
