@@ -87,11 +87,19 @@ class People(abce.Agent):
                 firm_wage = the wage the firm is offering
                 firm_id = the number of the firm the people are trading with
         """
-        sum_wages = sum([vacancy["wage"] for vacancy in vacancies_list])
+        wages = [vacancy["wage"] for vacancy in vacancies_list]
 
-        for vacancies in vacancies_list:
+        max_wage = max(wages)
+
+        distances = [1 - ((max_wage - wage) / max_wage) ** 100 for wage in wages]
+
+        norm = sum(distances)
+
+
+
+        for vacancies, dist in zip(vacancies_list, distances):
             firm = vacancies["name"]
-            willing_workers = self.population * (vacancies["wage"] / sum_wages)
+            willing_workers = self.population / norm * dist
             if vacancies["number"] <= willing_workers:
                 self.send(firm, 'max_employees', willing_workers)
                 self.give(firm, good='workers', quantity=vacancies["number"])
