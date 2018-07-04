@@ -95,8 +95,6 @@ class People(abce.Agent):
 
         norm = sum(distances)
 
-
-
         for vacancies, dist in zip(vacancies_list, distances):
             firm = vacancies["name"]
             willing_workers = self.population / norm * dist
@@ -113,7 +111,6 @@ class People(abce.Agent):
         print('    ' + self.group + str(dict(self.possessions())))
         self.log("money", self["money"])
         self.log("workers", self["workers"])
-
 
     def getvalue(self):
         """

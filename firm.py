@@ -70,6 +70,8 @@ class Firm(abce.Agent):
                 self.wage -= random.uniform(0, max_wage_change)
                 if self.wage < 0:
                     self.wage = 0
+        else:
+            raise Exception()
 
     def determine_bounds(self, demand):
         """
