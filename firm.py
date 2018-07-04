@@ -22,7 +22,7 @@ class Firm(abce.Agent):
     """
     def init(self, firm_money, wage_increment, price_increment,
              phi_upper, phi_lower, const_upper, const_lower,
-             excess, num_days_buffer, **_):
+             excess, num_days_buffer, productivity,  **_):
         """
         initializes starting characteristics
         """
@@ -35,6 +35,7 @@ class Firm(abce.Agent):
         self.const_lower = const_lower
         self.excess = excess
         self.num_days_buffer = num_days_buffer
+        self.productivity = productivity
 
         self.ideal_num_workers = 10
         self.price = 20
@@ -48,10 +49,8 @@ class Firm(abce.Agent):
         """
         produces goods to add to inventory based on number of workers and productivity
         """
-        productivity = 1
         before = self["produce"]
-        assert productivity * self["workers"] >= 0
-        self.create("produce", productivity * self["workers"])
+        self.create("produce", self.productivity * self["workers"])
         self.log("production", self["produce"] - before)
 
     def determine_wage(self):

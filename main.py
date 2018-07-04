@@ -21,7 +21,8 @@ params = dict(
 
     excess=1.1,  # if number of workers offered to work for firm exceeds 110% of ideal number, raise wage
     wage_increment=10,
-    price_increment=10
+    price_increment=10,
+    productivity=1
 )
 simulation = abce.Simulation(name='economy', processes=1)
 group_of_firms = simulation.build_agents(Firm, "firm", number=params["num_firms"], **params)
