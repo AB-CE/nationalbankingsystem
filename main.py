@@ -14,8 +14,6 @@ params = dict(
 
     num_days_buffer=10, # number of days worth of wages a firm will keep after giving profits
 
-    probability=75,  # 75% chance of increasing price when conditions are satisfied
-
     phi_upper=10, # phi_upper * demand gives upper bound to inventory
     phi_lower=2,
     const_upper=1.5, # const_upper * marginal_cost gives upper bound to price

@@ -21,7 +21,7 @@ class Firm(abce.Agent):
     - pay left over profits to workers
     """
     def init(self, firm_money, wage_increment, price_increment,
-             probability, phi_upper, phi_lower, const_upper, const_lower,
+             phi_upper, phi_lower, const_upper, const_lower,
              excess, num_days_buffer, **_):
         """
         initializes starting characteristics
@@ -29,7 +29,6 @@ class Firm(abce.Agent):
         self.create("money", firm_money)
         self.wage_increment = wage_increment
         self.price_increment = price_increment
-        self.probability = probability
         self.phi_upper = phi_upper
         self.phi_lower = phi_lower
         self.const_upper = const_upper
@@ -52,7 +51,7 @@ class Firm(abce.Agent):
         productivity = 1
         before = self["produce"]
         assert productivity * self["workers"] >= 0
-        self.create("produce", productivity*self["workers"])
+        self.create("produce", productivity * self["workers"])
         self.log("production", self["produce"] - before)
 
     def determine_wage(self):
@@ -76,7 +75,6 @@ class Firm(abce.Agent):
         else:
             self.get_messages("max_employees")
 
-
     def determine_bounds(self, demand):
         """
         determines the bound on the prices and inventory amounts
@@ -84,17 +82,14 @@ class Firm(abce.Agent):
         Args:
             demand: number of units of goods demanded by people from firm
         """
-
-
         marginal_cost = self.wage
-        self.upper_inv = self.phi_upper*list(demand)[self.id]
-        self.lower_inv = self.phi_lower*list(demand)[self.id]
-        self.lower_price = self.const_lower*marginal_cost
-        self.upper_price = self.const_upper*marginal_cost
+        self.upper_inv = self.phi_upper * list(demand)[self.id]
+        self.lower_inv = self.phi_lower * list(demand)[self.id]
+        self.lower_price = self.const_lower * marginal_cost
+        self.upper_price = self.const_upper * marginal_cost
         self.log('upper_inv', self.upper_inv)
         self.log('lower_inv', self.lower_inv)
         self.log('demand', list(demand)[self.id])
-
 
     def determine_workers(self):
         """
@@ -117,14 +112,11 @@ class Firm(abce.Agent):
         if the inventory is below the lower bound then increase price with a probability
         if the inventory is above the upper bound then decrease price with a probability
         """
-        probability = 100 # 75% chance that price is changed given satisfied conditions
         if self['produce'] < self.lower_inv and self.price < self.upper_price:
-            if random.randint(1, 100) <= probability:
-                self.price += random.uniform(0, self.price_increment)
+            self.price += random.uniform(0, self.price_increment)
         elif self['produce'] > self.upper_inv and self.price > self.lower_price:
-            if random.randint(1, 100) <= probability:
-                self.price -= random.uniform(0, self.price_increment)
-                self.price = max(self.lower_price, self.price)
+            self.price -= random.uniform(0, self.price_increment)
+            self.price = max(self.lower_price, self.price)
         self.log('price', self.price)
 
     def sell_goods(self):
