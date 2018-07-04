@@ -2,7 +2,7 @@ import abce
 from firm import Firm
 from people import People
 params = dict(
-    _population=1000,
+    population=1000,
     people_money=1000,
     num_firms=20,
     num_employees=1000,
@@ -25,8 +25,7 @@ params = dict(
 )
 simulation = abce.Simulation(name='economy', processes=1)
 group_of_firms = simulation.build_agents(Firm, "firm", number=params["num_firms"], **params)
-people = simulation.build_agents(People, "people", number=1, population=params["_population"],
-                                 money=params["people_money"], **params)
+people = simulation.build_agents(People, "people", number=1, **params)
 
 
 for r in range(params["num_days"]):
@@ -42,16 +41,13 @@ for r in range(params["num_days"]):
     group_of_firms.production()
     group_of_firms.pay_workers()
     group_of_firms.pay_profits()
-    demand_list = []
     group_of_firms.send_prices()
     people.get_prices()
-
     demand = people.buy_produce()
-    demand_list = list(demand)[0]
 
     group_of_firms.sell_goods()
     people.end_work_day()
-    group_of_firms.determine_bounds(demand=demand_list)
+    group_of_firms.determine_bounds(demand=list(demand)[0])
     people.print_possessions()
     group_of_firms.print_possessions()
     group_of_firms.determine_wage()
