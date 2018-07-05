@@ -21,7 +21,7 @@ class Firm(abce.Agent):
     - pay left over profits to workers
     """
     def init(self, firm_money, wage_increment, price_increment, worker_increment,
-             phi_upper, phi_lower, excess, num_days_buffer, productivity,  **_):
+             phi_upper, phi_lower, excess, num_days_buffer, productivity, num_firms, population,  **_):
         """
         initializes starting characteristics
         """
@@ -34,7 +34,7 @@ class Firm(abce.Agent):
         self.num_days_buffer = num_days_buffer
         self.productivity = productivity
         self.worker_increment = worker_increment
-        self.ideal_num_workers = 25
+        self.ideal_num_workers = population / num_firms * 0.5
         self.price = 20
         self.wage = 10
         self.upper_inv = 0

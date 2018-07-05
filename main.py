@@ -5,14 +5,13 @@ params = dict(
     population=1000,
     people_money=1000,
     num_firms=20,
-    num_employees=1000,
     firm_money=2000,
 
-    num_days=1000,
+    num_days=2000,
 
     l=0.5,  # constant from CS equation
 
-    num_days_buffer=10, # number of days worth of wages a firm will keep after giving profits
+    num_days_buffer=10,  # number of days worth of wages a firm will keep after giving profits
 
     phi_upper=10,  # phi_upper * demand gives upper bound to inventory
     phi_lower=2,
