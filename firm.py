@@ -57,14 +57,13 @@ class Firm(abce.Agent):
         if the number of workers offered exceeded 110% of the ideal number then lower the wage
         """
         messages = self.get_messages("max_employees")
-        max_wage_change = self.wage_increment
         if self.ideal_num_workers > self['workers']:
-            self.wage += random.uniform(0, 0.01 * self.wage)
+            self.wage += random.uniform(0, self.wage_increment * self.wage)
 
         elif self.ideal_num_workers == self['workers']:
             max_employees = messages[0]
             if max_employees > self.excess * self.ideal_num_workers:
-                self.wage -= random.uniform(0, 0.01 * self.wage)
+                self.wage -= random.uniform(0, self.wage_increment * self.wage)
                 if self.wage < 0:
                     self.wage = 0
         else:
@@ -106,9 +105,9 @@ class Firm(abce.Agent):
         """
         marginal_cost = self.wage
         if self['produce'] < self.lower_inv:
-            self.price += random.uniform(0, self.price * 0.01)
+            self.price += random.uniform(0, self.price_increment * self.price)
         elif self['produce'] > self.upper_inv:
-            self.price -= random.uniform(0, self.price * 0.01)
+            self.price -= random.uniform(0, self.price_increment * self.price)
             self.price = max(marginal_cost, self.price)
         self.log('price', self.price)
 

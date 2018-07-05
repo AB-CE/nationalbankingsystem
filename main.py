@@ -17,8 +17,8 @@ params = dict(
     phi_upper=10,  # phi_upper * demand gives upper bound to inventory
     phi_lower=2,
     excess=1.1,  # if number of workers offered to work for firm exceeds 110% of ideal number, raise wage
-    wage_increment=10,
-    price_increment=10,
+    wage_increment=0.01,
+    price_increment=0.01,
     productivity=1
 )
 simulation = abce.Simulation(name='economy', processes=1)
