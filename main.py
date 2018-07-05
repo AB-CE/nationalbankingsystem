@@ -16,10 +16,12 @@ params = dict(
 
     phi_upper=10,  # phi_upper * demand gives upper bound to inventory
     phi_lower=2,
-    excess=1.1,  # if number of workers offered to work for firm exceeds 110% of ideal number, raise wage
+    excess=1.1,  # if number of workers offered to work for firm exceeds 110% of ideal number, decrease wage
     wage_increment=0.01,
     price_increment=0.01,
+    worker_increment=0.01,
     productivity=1
+
 )
 simulation = abce.Simulation(name='economy', processes=1)
 group_of_firms = simulation.build_agents(Firm, "firm", number=params["num_firms"], **params)

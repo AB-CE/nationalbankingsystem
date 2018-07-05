@@ -20,7 +20,7 @@ class Firm(abce.Agent):
     - pay workers
     - pay left over profits to workers
     """
-    def init(self, firm_money, wage_increment, price_increment,
+    def init(self, firm_money, wage_increment, price_increment, worker_increment,
              phi_upper, phi_lower, excess, num_days_buffer, productivity,  **_):
         """
         initializes starting characteristics
@@ -33,8 +33,8 @@ class Firm(abce.Agent):
         self.excess = excess
         self.num_days_buffer = num_days_buffer
         self.productivity = productivity
-
-        self.ideal_num_workers = 10
+        self.worker_increment = worker_increment
+        self.ideal_num_workers = 25
         self.price = 20
         self.wage = 10
         self.upper_inv = 0
@@ -89,11 +89,11 @@ class Firm(abce.Agent):
         if below the low bound for inventory then increase the ideal number of workers
         """
         if self['produce'] > self.upper_inv:
-            self.ideal_num_workers -= 0.1 * self.ideal_num_workers  # random.uniform(0, 0.1 * self.ideal_num_workers)
+            self.ideal_num_workers -= random.uniform(0, self.worker_increment * self.ideal_num_workers)
             if self.ideal_num_workers < 0:
                 self.ideal_num_workers = 0
         elif self['produce'] < self.lower_inv:
-            self.ideal_num_workers += 0.1 * self.ideal_num_workers    #random.uniform(0, 0.1 * self.ideal_num_workers)
+            self.ideal_num_workers += random.uniform(0, self.worker_increment * self.ideal_num_workers)
 
     def determine_price(self):
         """
