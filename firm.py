@@ -151,7 +151,7 @@ class Firm(abce.Agent):
         self.give("people", "money", quantity=salary)
         self.salary = salary
 
-    def pay_profits(self):
+    def pay_dividents(self):
         """
         pays workers/bosses (same agent) the extra profits
         """

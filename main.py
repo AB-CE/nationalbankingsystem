@@ -38,7 +38,7 @@ for r in range(params["num_days"]):
 
     group_of_firms.production()
     group_of_firms.pay_workers()
-    group_of_firms.pay_profits()
+    group_of_firms.pay_dividents()
     group_of_firms.send_prices()
     people.get_prices()
     demand = people.buy_goods()
