@@ -19,9 +19,8 @@ params = dict(
     wage_increment=0.01,
     price_increment=0.01,
     worker_increment=0.01,
-    productivity=1
-
-)
+    productivity=1,
+    wage_acceptance=1)
 simulation = abce.Simulation(name='economy', processes=1)
 group_of_firms = simulation.build_agents(Firm, "firm", number=params["num_firms"], **params)
 people = simulation.build_agents(People, "people", number=1, **params)

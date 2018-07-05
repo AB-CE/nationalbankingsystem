@@ -18,7 +18,7 @@ class People(abce.Agent):
         - Otherwise, they will sell the maximum
     """
 
-    def init(self, people_money, population, l, num_firms, **_):
+    def init(self, people_money, population, l, num_firms, wage_acceptance, **_):
         self.name = "people"
         self.population = population
         self.create('money', people_money)
@@ -26,6 +26,7 @@ class People(abce.Agent):
         self.num_firms = num_firms
         self.price_dict = {}
         self.l = l
+        self.wage_acceptance = wage_acceptance
 
     def create_labor(self):
         """
@@ -91,7 +92,7 @@ class People(abce.Agent):
 
         max_wage = max(wages)
 
-        distances = [1 - ((max_wage - wage) / max_wage) for wage in wages]
+        distances = [1 - ((max_wage - wage) / max_wage) ** self.wage_acceptance for wage in wages]
 
         norm = sum(distances)
 
