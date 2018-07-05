@@ -21,8 +21,7 @@ class Firm(abce.Agent):
     - pay left over profits to workers
     """
     def init(self, firm_money, wage_increment, price_increment,
-             phi_upper, phi_lower, const_upper, const_lower,
-             excess, num_days_buffer, productivity,  **_):
+             phi_upper, phi_lower, excess, num_days_buffer, productivity,  **_):
         """
         initializes starting characteristics
         """
@@ -31,8 +30,6 @@ class Firm(abce.Agent):
         self.price_increment = price_increment
         self.phi_upper = phi_upper
         self.phi_lower = phi_lower
-        self.const_upper = const_upper
-        self.const_lower = const_lower
         self.excess = excess
         self.num_days_buffer = num_days_buffer
         self.productivity = productivity
@@ -80,11 +77,8 @@ class Firm(abce.Agent):
         Args:
             demand: number of units of goods demanded by people from firm
         """
-        marginal_cost = self.wage
         self.upper_inv = self.phi_upper * list(demand)[self.id]
         self.lower_inv = self.phi_lower * list(demand)[self.id]
-        self.lower_price = self.const_lower * marginal_cost
-        self.upper_price = self.const_upper * marginal_cost
         self.log('upper_inv', self.upper_inv)
         self.log('lower_inv', self.lower_inv)
         self.log('demand', list(demand)[self.id])
@@ -110,11 +104,12 @@ class Firm(abce.Agent):
         if the inventory is below the lower bound then increase price with a probability
         if the inventory is above the upper bound then decrease price with a probability
         """
-        if self['produce'] < self.lower_inv and self.price < self.upper_price:
+        marginal_cost = self.wage
+        if self['produce'] < self.lower_inv:
             self.price += random.uniform(0, self.price * 0.01)
-        elif self['produce'] > self.upper_inv and self.price > self.lower_price:
+        elif self['produce'] > self.upper_inv:
             self.price -= random.uniform(0, self.price * 0.01)
-            self.price = max(self.lower_price, self.price)
+            self.price = max(marginal_cost, self.price)
         self.log('price', self.price)
 
     def sell_goods(self):
