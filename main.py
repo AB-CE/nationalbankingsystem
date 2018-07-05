@@ -47,10 +47,10 @@ for r in range(params["num_days"]):
     group_of_firms.determine_bounds(demand=list(demand)[0])
     (group_of_firms + people).print_possessions()
     group_of_firms.determine_wage()
-    group_of_firms.determine_workers_to_be_hired()
-    group_of_firms.determine_price()
+    group_of_firms.expand_or_change_price()
     (people + group_of_firms).destroy_unused_labor()
     people.consumption()
+    group_of_firms.determine_profits()
 
 print('done')
 

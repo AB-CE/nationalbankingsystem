@@ -26,6 +26,7 @@ class Firm(abce.Agent):
         initializes starting characteristics
         """
         self.create("money", firm_money)
+        self.last_round_money = firm_money
         self.wage_increment = wage_increment
         self.price_increment = price_increment
         self.phi_upper = phi_upper
@@ -41,6 +42,8 @@ class Firm(abce.Agent):
         self.lower_inv = 0
         self.upper_price = 0
         self.lower_price = 0
+        self.profit = self.profit_1 = 0
+        self.last_action = (None, None)
 
     def production(self):
         """
@@ -82,33 +85,41 @@ class Firm(abce.Agent):
         self.log('lower_inv', self.lower_inv)
         self.log('demand', list(demand)[self.id])
 
-    def determine_workers_to_be_hired(self):
-        """
-        compares the inventory with the upper and lower bounds
-        if above the high bound for inventory then decrease the ideal number of workers
-        if below the low bound for inventory then increase the ideal number of workers
-        """
-        if self['produce'] > self.upper_inv:
-            self.ideal_num_workers -= random.uniform(0, self.worker_increment * self.ideal_num_workers)
-            if self.ideal_num_workers < 0:
-                self.ideal_num_workers = 0
-        elif self['produce'] < self.lower_inv:
-            self.ideal_num_workers += random.uniform(0, self.worker_increment * self.ideal_num_workers)
+    def determine_profits(self):
+        self.profit_1 = self.profit
+        self.profit = self['money'] - self.last_round_money + self.dividends
+        self.last_round_money = self['money']
 
-    def determine_price(self):
-        """
-        compares the inventory with the upper and lower bounds and if the price is within
-        the upper and lower price range
-        if the price is within the bounded range then:
-        if the inventory is below the lower bound then increase price with a probability
-        if the inventory is above the upper bound then decrease price with a probability
-        """
-        marginal_cost = self.wage
-        if self['produce'] < self.lower_inv:
-            self.price += random.uniform(0, self.price_increment * self.price)
-        elif self['produce'] > self.upper_inv:
-            self.price -= random.uniform(0, self.price_increment * self.price)
-            self.price = max(marginal_cost, self.price)
+    def expand_or_change_price(self):
+        profitable = self.profit >= self.profit_1
+
+        if self['produce'] > self.upper_inv:
+            if not profitable or random.random() < 0.1  or self.last_action[1] != '-':
+                self.last_action = random.choice([('ideal_num_workers', '-'),
+                                                  ('price', '-')])
+            if self.last_action != ('price', '-'):
+                self.ideal_num_workers -= random.uniform(0, self.worker_increment * self.ideal_num_workers)
+            elif self.last_action != ('ideal_num_workers', '-'):
+                self.price -= random.uniform(0, self.price_increment * self.price)
+            else:
+                raise
+
+        elif self['produce'] < self.lower_inv:
+            if not profitable or random.random() < 0.1 or self.last_action[1] != '+':
+                self.last_action = random.choice([('ideal_num_workers', '+'),
+                                                  ('price', '+')])
+            if self.last_action != ('price', '+'):
+                if self['workers'] >= self.ideal_num_workers:
+                    self.ideal_num_workers += random.uniform(0, self.worker_increment * self.ideal_num_workers)
+            elif self.last_action != ('ideal_num_workers', '+'):
+                self.price += random.uniform(0, self.price_increment * self.price)
+            else:
+                raise
+        else:
+            self.last_action = (None, None)
+
+        self.price = max(self.wage, self.price)
+        self.ideal_num_workers = max(0, self.ideal_num_workers)
         self.log('price', self.price)
 
     def sell_goods(self):
@@ -138,6 +149,7 @@ class Firm(abce.Agent):
             self.wage -= self.wage_increment
             self.wage = max(0, self.wage)
         self.give("people", "money", quantity=salary)
+        self.salary = salary
 
     def pay_profits(self):
         """
@@ -149,6 +161,7 @@ class Firm(abce.Agent):
             self.give("people", "money", quantity=dividends)
 
         self.log('dividends', max(0, dividends))
+        self.dividends = dividends
 
     def getvalue_ideal_num_workers(self):
         return (self.name, self.ideal_num_workers)
@@ -175,3 +188,5 @@ class Firm(abce.Agent):
         """
         """
         self.destroy('workers')
+        self.log('wage_share', self.salary / (self.salary + self.dividends))
+        self.log('tot_wage_bill', self.salary)
