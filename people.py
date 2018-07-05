@@ -91,7 +91,7 @@ class People(abce.Agent):
 
         max_wage = max(wages)
 
-        distances = [1 - ((max_wage - wage) / max_wage) ** 100 for wage in wages]
+        distances = [1 - ((max_wage - wage) / max_wage) for wage in wages]
 
         norm = sum(distances)
 
