@@ -18,7 +18,7 @@ class People(abce.Agent):
         - Otherwise, they will sell the maximum
     """
 
-    def init(self, people_money, population, l, num_firms, wage_acceptance, **_):
+    def init(self, people_money, population, l, num_firms, wage_acceptance, farm_goods, maintenance_goods, **_):
         self.name = "people"
         self.population = population
         self.create('money', people_money)
@@ -133,6 +133,8 @@ class People(abce.Agent):
         for msg in price_msg:
             self.price_dict[msg.sender] = msg.content
         return self.price_dict
+
+    def buy_farm_goods(self):
 
 
 

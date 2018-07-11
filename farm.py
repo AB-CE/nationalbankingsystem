@@ -5,7 +5,7 @@ class Farm(abce.Agent):
 
     def init(self, money=200, farm_goods=0, land=1000, wage=0, farmable_land=0, harvest_per_day=50, goods_to_sell=0,
              workers=0, goods_per_land=10, goods_per_worker=25, ideal_workers=0, good_price=0, days_harvest=80, goods_per_land=20,
-             excess=1.1, wage_incriment=0.02, price_incriment = 0.02):
+             excess=1.1, wage_increment=0.02, price_increment = 0.02, price=5):
         self.create("money", money)
         self.create("farm_goods", farm_goods)
         self.land = land
@@ -13,7 +13,6 @@ class Farm(abce.Agent):
         self.ideal_workers = ideal_workers
         self.create("workers", workers)
         self.goods_per_worker = goods_per_worker
-        self.price_dict = {}
         self.farmable_land = farmable_land
         if self.farmable_land > 1:
             raise Exception()
@@ -23,8 +22,10 @@ class Farm(abce.Agent):
         self.goods_per_land = goods_per_land
         self.days_harvest = days_harvest
         self.excess = excess
-        self.wage_incriment = wage_incriment
-        self.price_incriment = price_incriment
+        self.wage_increment = wage_increment
+        self.price_increment = price_increment
+        self.days_left = days_harvest
+        self.price = price
 
     def grow_crops(self):
         """
@@ -39,25 +40,20 @@ class Farm(abce.Agent):
         Converts farmable land into crops during the harvest period
         """
         max_goods = self.land * self.farmable_land * self.goods_per_land
-        # ideal capital provides enough capital to upkeep land each day and enough capital to reap goods from land over entire harvest
-        # harvest lasts 1/4 of cycle ie 0.25 times number of days per cycle
         if self.harvest_per_day < max_goods:
             self.create("farm_goods", self.harvest_per_day)
             self.farmable_land = (max_goods - self.harvest_per_day) / (self.land * self.goods_per_land)
         else:
             self.create("farm_goods", max_goods)
             self.farmable_land = 0
-        print("MAX GOODS:", max_goods)
-        print("GOODS TODAY", day_goods)
-        print("GOODS:", self['farm_goods'])
-        print("FARMABLE LAND:", self.farmable_land)
 
     def find_ideal_workers(self):
         """
         finds the ideal number of workers to deliver the goods
          > Equal to the total number of goods divided by the days during the cycle and the goods each worker can deliver
         """
-        self.ideal_workers = int(self["farm_goods"] / (self.days_harvest * self.goods_per_worker)) + 1
+        self.ideal_workers = int(self["farm_goods"] / (self.days_left * self.goods_per_worker)) + 1
+        self.days_left -= 1
 
     def determine_wage(self):
         """
