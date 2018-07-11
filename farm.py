@@ -3,29 +3,25 @@ import random
 
 class Farm(abce.Agent):
 
-    def init(self, money=200, farm_goods=0, land=1000, wage=0, farmable_land=0, harvest_per_day=50, goods_to_sell=0,
-             workers=0, goods_per_land=10, goods_per_worker=25, ideal_workers=0, good_price=0, days_harvest=80, goods_per_land=20,
-             excess=1.1, wage_increment=0.02, price_increment = 0.02, price=5):
+    def init(self, money, farm_goods, workers, land, wage, farmable_land, harvest_per_day, goods_to_sell, goods_per_land,
+             goods_per_worker, ideal_workers, goods_price, days_harvest, wage_increment, price_increment):
         self.create("money", money)
         self.create("farm_goods", farm_goods)
+        self.create("workers", workers)
         self.land = land
         self.wage = wage
-        self.ideal_workers = ideal_workers
-        self.create("workers", workers)
-        self.goods_per_worker = goods_per_worker
         self.farmable_land = farmable_land
         if self.farmable_land > 1:
             raise Exception()
-        self.goods_to_sell = goods_to_sell
-        self.good_price = good_price
         self.harvest_per_day = harvest_per_day
+        self.goods_to_sell = goods_to_sell
         self.goods_per_land = goods_per_land
-        self.days_harvest = days_harvest
-        self.excess = excess
+        self.goods_per_worker = goods_per_worker
+        self.ideal_workers = ideal_workers
+        self.goods_price = goods_price
+        self.days_left = days_harvest
         self.wage_increment = wage_increment
         self.price_increment = price_increment
-        self.days_left = days_harvest
-        self.price = price
 
     def grow_crops(self):
         """
@@ -67,7 +63,7 @@ class Farm(abce.Agent):
 
         elif self.ideal_workers == self['workers']:
             max_employees = messages[0]
-            if max_employees > self.excess * self.ideal_workers:
+            if max_employees > self.ideal_workers:
                 self.wage -= random.uniform(0, self.wage_increment * self.wage)
                 if self.wage < 0:
                     self.wage = 0
@@ -91,15 +87,15 @@ class Farm(abce.Agent):
         Sells the goods
         """
         for offer in self.get_offers("farm_goods"):
-            if offer.price >= self.good_price and self.goods_to_sell >= offer.quantity:
+            if offer.price >= self.goods_price and self.goods_to_sell >= offer.quantity:
                 self.accept(offer)
                 self.log('sales', offer.quantity)
                 self.goods_to_sell -= offer.quantity
-            elif offer.price >= self.good_price and self.goods_to_sell < offer.quantity:
+            elif offer.price >= self.goods_price and self.goods_to_sell < offer.quantity:
                 self.log('sales', self["farm_goods"])
                 self.accept(offer, quantity=self.goods_to_sell)
                 self.goods_to_sell = 0
-            elif offer.price < self.good_price:
+            elif offer.price < self.goods_price:
                 self.reject(offer)
                 self.log('sales', 0)
 
@@ -117,6 +113,6 @@ class Farm(abce.Agent):
         Adjusts prices based on how many goods are sold
         """
         if self.goods_to_sell > 0:
-            self.price -= random.uniform(0, self.price_increment * self.price)
+            self.goods_price -= random.uniform(0, self.price_increment * self.goods_price)
         else:
-            self.price += random.uniform(0, self.price_increment * self.price)
+            self.goods_price += random.uniform(0, self.price_increment * self.goods_price)

@@ -27,6 +27,7 @@ class People(abce.Agent):
         self.price_dict = {}
         self.l = l
         self.wage_acceptance = wage_acceptance
+        self.create("farm_goods", farm_goods)
 
     def create_labor(self):
         """
