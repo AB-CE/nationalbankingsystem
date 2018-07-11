@@ -169,6 +169,9 @@ class People(abce.Agent):
             self.log('total_demand', sum(demand_list))
             return demand_list
 
+    def consume_farm_goods(self):
+        self.destroy("farm_goods", self.maintenance_goods)
+
 
 
 

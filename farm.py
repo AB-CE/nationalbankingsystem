@@ -67,7 +67,7 @@ class Farm(abce.Agent):
         else:
             raise Exception()
 
-    def transport_goods(self):
+    def transport_goods(self): # don't include this just pay workers flat price for 1 day work
         """
         Transports goods to the market. The workers are payed here
         """
