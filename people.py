@@ -162,9 +162,9 @@ class People(abce.Agent):
             # I must reflect tht they're only buying a certain number of necessaties
             I = self.notreserved['money']
             for farm in range(self.num_farms):  # fix systematic advantage for 0 firm
-                farm_price = float(self.price_dict['farm', farm])
+                goods_price = float(self.price_dict['farm', farm])
                 demand = (I / q) * (q / farm_price) ** (1 / (1 - l))
-                self.buy(('farm', farm), good='farm_goods', quantity=demand, price=farm_price)
+                self.buy(('farm', farm), good='farm_goods', quantity=demand, price=goods_price)
                 demand_list.append(demand)
             self.log('total_demand', sum(demand_list))
             return demand_list

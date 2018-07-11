@@ -3,18 +3,12 @@ import random
 
 class Farm(abce.Agent):
 
-    def init(self, money, farm_goods, workers, land, wage, farmable_land, harvest_per_day, goods_to_sell, goods_per_land,
-             goods_per_worker, ideal_workers, goods_price, days_harvest, wage_increment, price_increment):
-        self.create("money", money)
-        self.create("farm_goods", farm_goods)
-        self.create("workers", workers)
-        self.land = land
-        self.wage = wage
-        self.farmable_land = farmable_land
-        if self.farmable_land > 1:
-            raise Exception()
+    def init(self, farm_money, farm_workers, farm_land, harvest_per_day, goods_per_land,
+             goods_per_worker, ideal_workers, goods_price, days_harvest, wage_increment, price_increment, **_):
+        self.create("money", farm_money)
+        self.create("workers", farm_workers)
+        self.land = farm_land
         self.harvest_per_day = harvest_per_day
-        self.goods_to_sell = goods_to_sell
         self.goods_per_land = goods_per_land
         self.goods_per_worker = goods_per_worker
         self.ideal_workers = ideal_workers
@@ -22,6 +16,9 @@ class Farm(abce.Agent):
         self.days_left = days_harvest
         self.wage_increment = wage_increment
         self.price_increment = price_increment
+        self.wage = 10
+        self.farmable_land = 0
+        self.goods_to_sell = 0
 
     def grow_crops(self):
         """

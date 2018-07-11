@@ -1,11 +1,19 @@
 import abce
 from firm import Firm
 from people import People
+from farm import Farm
+
 params = dict(
     population=1000,
     people_money=1000,
     num_firms=20,
     firm_money=2000,
+    farm_money=3000,
+    farm_workers=5,
+    farm_land=5000,
+    harvest_per_day=100,
+    goods_per_land=10,
+    goods_per_worker=100,
 
     num_days=2000,
 
