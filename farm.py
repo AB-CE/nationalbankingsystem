@@ -116,3 +116,10 @@ class Farm(abce.Agent):
             self.goods_price -= random.uniform(0, self.price_increment * self.goods_price)
         else:
             self.goods_price += random.uniform(0, self.price_increment * self.goods_price)
+
+    def publish_vacencies(self):
+        return {"name": self.name, "number": self.ideal_num_workers, "wage": self.wage}
+
+    def send_prices(self):
+        self.send_envelope('people', 'price', self.price)
+        return self.price

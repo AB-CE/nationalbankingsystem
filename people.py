@@ -18,16 +18,21 @@ class People(abce.Agent):
         - Otherwise, they will sell the maximum
     """
 
-    def init(self, people_money, population, l, num_firms, wage_acceptance, farm_goods, maintenance_goods, **_):
+    def init(self, people_money, population, l, num_firms, wage_acceptance, farm_goods, maintenance_goods, reserve,
+             num_farms, **_):
         self.name = "people"
         self.population = population
         self.create('money', people_money)
         self.produce = 0
         self.num_firms = num_firms
         self.price_dict = {}
+        self.price_dict_farm = {}
         self.l = l
         self.wage_acceptance = wage_acceptance
         self.create("farm_goods", farm_goods)
+        self.maintenance_goods = maintenance_goods
+        self.reserve = reserve
+        self.num_farms = num_farms
 
     def create_labor(self):
         """
@@ -52,6 +57,17 @@ class People(abce.Agent):
         L = self.l
         q = 0
         for id in range(self.num_firms):
+            q += self.price_dict[('firm', id)] ** (L / (L - 1))
+        q = float(q) ** ((L - 1) / L)
+        return q
+
+    def find_q_farms(self):
+        """
+        returns the parameter q as defined in the C-D utility function
+        """
+        L = self.l
+        q = 0
+        for id in range(self.num_farms):
             q += self.price_dict[('firm', id)] ** (L / (L - 1))
         q = float(q) ** ((L - 1) / L)
         return q
@@ -136,6 +152,23 @@ class People(abce.Agent):
         return self.price_dict
 
     def buy_farm_goods(self):
+        if self["farm_goods"] < self.population * (self.maintenance_goods + self.reserve):
+            q = self.find_q()
+            self.log('q', q)
+
+            demand_list = []
+            l = self.l
+
+            # I must reflect tht they're only buying a certain number of necessaties
+            I = self.notreserved['money']
+            for farm in range(self.num_farms):  # fix systematic advantage for 0 firm
+                farm_price = float(self.price_dict['farm', farm])
+                demand = (I / q) * (q / farm_price) ** (1 / (1 - l))
+                self.buy(('farm', farm), good='farm_goods', quantity=demand, price=farm_price)
+                demand_list.append(demand)
+            self.log('total_demand', sum(demand_list))
+            return demand_list
+
 
 
 
