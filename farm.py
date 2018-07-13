@@ -90,7 +90,7 @@ class Farm(abce.Agent):
                 self.log('sales', offer.quantity)
                 self.goods_to_sell -= offer.quantity
             elif offer.price >= self.goods_price and self.goods_to_sell < offer.quantity:
-                self.log('sales', self["farm_goods"])
+                self.log('sales', self.goods_to_sell)
                 self.accept(offer, quantity=self.goods_to_sell)
                 self.goods_to_sell = 0
             elif offer.price < self.goods_price:
@@ -133,3 +133,5 @@ class Farm(abce.Agent):
         print('    ' + self.group + str(dict(self.possessions())))
         self.log("money", self["money"])
         self.log("workers", self["workers"])
+        self.log('wage_farm', self.wage)
+        self.log('ideal_workers_farms', self.ideal_workers)

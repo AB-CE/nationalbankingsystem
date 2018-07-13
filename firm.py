@@ -83,7 +83,7 @@ class Firm(abce.Agent):
         self.lower_inv = self.phi_lower * list(demand)[self.id]
         self.log('upper_inv', self.upper_inv)
         self.log('lower_inv', self.lower_inv)
-        self.log('demand', list(demand)[self.id])
+        #self.log('demand', list(demand)[self.id])
 
     def determine_profits(self):
         self.profit_1 = self.profit
@@ -102,7 +102,7 @@ class Firm(abce.Agent):
             elif self.last_action != ('ideal_num_workers', '-'):
                 self.price -= random.uniform(0, self.price_increment * self.price)
             else:
-                raise
+                raise Exception()
 
         elif self['produce'] < self.lower_inv:
             if not profitable or random.random() < 0.1 or self.last_action[1] != '+':
@@ -114,7 +114,7 @@ class Firm(abce.Agent):
             elif self.last_action != ('ideal_num_workers', '+'):
                 self.price += random.uniform(0, self.price_increment * self.price)
             else:
-                raise
+                raise Exception()
         else:
             self.last_action = (None, None)
 
@@ -183,6 +183,7 @@ class Firm(abce.Agent):
         self.log("money", self["money"])
         self.log("produce", self["produce"])
         self.log("workers", self["workers"])
+        self.log("firm_wage", self.wage)
 
     def destroy_unused_labor(self):
         """

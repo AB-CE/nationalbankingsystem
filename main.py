@@ -1,4 +1,5 @@
 import abce
+import pandas as pd
 from firm import Firm
 from people import People
 from farm import Farm
@@ -42,23 +43,36 @@ group_of_firms = simulation.build_agents(Firm, "firm", number=params["num_firms"
 people = simulation.build_agents(People, "people", number=1, **params)
 farms = simulation.build_agents(Farm, "farm", number=params["num_farms"], **params)
 
-years = int(params["num_days"] / (4 * params["days_harvest"]))
 
+def main(params):
+    for date in pd.date_range(start='1/1/1880', periods=params['num_days'], freq='D'):
+        simulation.time = int('%04i' % date.year + '%02i' % date.month + '%02i' % date.day)
 
-for year in range(years):
-    for r in range(3 * params["days_harvest"]):
-        simulation.time = r
+        group_of_firms.panel_log(variables=['ideal_num_workers'], goods=['workers'])
 
-        group_of_firms.panel_log(variables=['wage', 'ideal_num_workers'], goods=['workers'])
-        farms.panel_log(variables=['wage', 'ideal_workers'], goods=['workers'])
-
-        farms.grow_crops()
 
         people.create_labour()
 
-        vacancies_list = list(group_of_firms.publish_vacancies())
+        if 8 * 30 < date.dayofyear < 10 * 30:
+            farms.harvest()
+            farms.find_ideal_workers()
 
-        people.send_workers(vacancies_list)
+            vacancies_list = list((group_of_firms + farms).publish_vacancies())
+            people.send_workers(vacancies_list)
+
+            farms.transport_goods()
+            farms.send_prices()
+            people.get_prices()
+            people.buy_farm_goods()
+            farms.sell_harvest()
+            farms.transport_back()
+            farms.change_price()
+            farms.determine_wage()
+
+        else:
+            farms.grow_crops()
+            vacancies_list = list(group_of_firms.publish_vacancies())
+            people.send_workers(vacancies_list)
 
         group_of_firms.production()
         group_of_firms.pay_workers()
@@ -78,50 +92,13 @@ for year in range(years):
 
         people.consume_farm_goods()
 
-    for r in range(params["days_harvest"]):
-        simulation.time = r
-
-        group_of_firms.panel_log(variables=['wage', 'ideal_num_workers'], goods=['workers'])
-        farms.panel_log(variables=['wage', 'ideal_workers'], goods=['workers'])
-
-        people.create_labour()
-
-        farms.harvest()
-        farms.find_ideal_workers()
-
-        vacancies_list = list((group_of_firms + farms).publish_vacancies())
-
-        people.send_workers(vacancies_list)
-
-        group_of_firms.production()
-        group_of_firms.pay_workers()
-        group_of_firms.pay_dividents()
-
-        farms.transport_goods()
-        farms.send_prices()
-        people.get_prices()
-        people.buy_farm_goods()
-        farms.sell_harvest()
-        farms.transport_back()
-        farms.change_price()
-        farms.determine_wage()
-
-        group_of_firms.send_prices()
-        people.get_prices()
-        demand = people.buy_goods()
-        group_of_firms.sell_goods()
-        group_of_firms.determine_bounds(demand=list(demand)[0])
-        (group_of_firms + people).print_possessions()
-        group_of_firms.determine_wage()
-        group_of_firms.expand_or_change_price()
-        (people + group_of_firms).destroy_unused_labor()
-        group_of_firms.determine_profits()
-
-        people.consumption()
-        people.consume_farm_goods()
 
 
-print('done')
+    print('done')
 
-simulation.graph()
-simulation.finalize()
+    simulation.graph()
+    simulation.finalize()
+
+
+if __name__ == '__main__':
+    main(params)
