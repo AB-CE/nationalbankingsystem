@@ -7,6 +7,7 @@ params = dict(
     population=1000,
     people_money=1000,
     num_firms=20,
+    num_farms=20,
     firm_money=2000,
     farm_money=3000,
     farm_workers=5,
@@ -14,6 +15,8 @@ params = dict(
     harvest_per_day=100,
     goods_per_land=10,
     goods_per_worker=100,
+    goods_price=30,
+    days_harvest=100,
 
     num_days=2000,
 
@@ -28,11 +31,13 @@ params = dict(
     price_increment=0.01,
     worker_increment=0.01,
     productivity=1,
-    wage_acceptance=1)
+    wage_acceptance=1,
+    farm_wage_incriment=0.01,
+    farm_price_incriment=0.01)
 simulation = abce.Simulation(name='economy', processes=1)
 group_of_firms = simulation.build_agents(Firm, "firm", number=params["num_firms"], **params)
 people = simulation.build_agents(People, "people", number=1, **params)
-
+farms = simulation.build_agents(Farm, "farm", number=params["num_farms"], **params)
 
 for r in range(params["num_days"]):
     simulation.time = r
