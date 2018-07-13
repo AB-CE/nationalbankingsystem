@@ -18,8 +18,8 @@ class People(abce.Agent):
         - Otherwise, they will sell the maximum
     """
 
-    def init(self, people_money, population, l, num_firms, wage_acceptance, farm_goods, maintenance_goods, reserve,
-             num_farms, **_):
+    def init(self, people_money, population, l, num_firms, wage_acceptance, maintenance_goods, reserve,
+             num_farms, days_harvest, **_):
         self.name = "people"
         self.population = population
         self.create('money', people_money)
@@ -29,12 +29,11 @@ class People(abce.Agent):
         self.price_dict_farm = {}
         self.l = l
         self.wage_acceptance = wage_acceptance
-        self.create("farm_goods", farm_goods)
         self.maintenance_goods = maintenance_goods
         self.reserve = reserve
         self.num_farms = num_farms
 
-    def create_labor(self):
+    def create_labour(self):
         """
         creates labour to add to the people's inventory
         """
@@ -61,6 +60,7 @@ class People(abce.Agent):
         q = float(q) ** ((L - 1) / L)
         return q
 
+
     def find_q_farms(self):
         """
         returns the parameter q as defined in the C-D utility function
@@ -68,7 +68,7 @@ class People(abce.Agent):
         L = self.l
         q = 0
         for id in range(self.num_farms):
-            q += self.price_dict[('firm', id)] ** (L / (L - 1))
+            q += self.price_dict[('farm', id)] ** (L / (L - 1))
         q = float(q) ** ((L - 1) / L)
         return q
 
@@ -153,25 +153,39 @@ class People(abce.Agent):
 
     def buy_farm_goods(self):
         if self["farm_goods"] < self.population * (self.maintenance_goods + self.reserve):
-            q = self.find_q()
+            q = self.find_q_farms()
             self.log('q', q)
 
             demand_list = []
             l = self.l
 
             # I must reflect tht they're only buying a certain number of necessaties
-            I = self.notreserved['money']
+            I = self.not_reserved('money')
             for farm in range(self.num_farms):  # fix systematic advantage for 0 firm
                 goods_price = float(self.price_dict['farm', farm])
-                demand = (I / q) * (q / farm_price) ** (1 / (1 - l))
+                demand = (I / q) * (q / goods_price) ** (1 / (1 - l))
                 self.buy(('farm', farm), good='farm_goods', quantity=demand, price=goods_price)
                 demand_list.append(demand)
             self.log('total_demand', sum(demand_list))
             return demand_list
 
     def consume_farm_goods(self):
-        self.destroy("farm_goods", self.maintenance_goods)
+        """
+        Each person consumes the farm goods they must consume per day
+        """
+        if self["farm_goods"] > self.maintenance_goods * self.population:
+            self.destroy("farm_goods", self.maintenance_goods * self.population)
+        elif 0 < self["farm_goods"] < self.maintenance_goods * self.population:
+            self.destroy("farm_goods")
+        else:
+            pass
 
+    def find_reserve(self):
+        """
+        Finds how many goods each person must keep in their reserve. This is such that they can consume their maintenance
+        goods per day that is not the harvest.
+        """
+        self.reserve = self.days_harvest * 3 * self.maintenance_goods
 
 
 

@@ -169,7 +169,7 @@ class Firm(abce.Agent):
     def getvalue_wage(self):
         return self.wage
 
-    def publish_vacencies(self):
+    def publish_vacancies(self):
         return {"name": self.name, "number": self.ideal_num_workers, "wage": self.wage}
 
     def send_prices(self):

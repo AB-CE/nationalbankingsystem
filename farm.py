@@ -3,22 +3,22 @@ import random
 
 class Farm(abce.Agent):
 
-    def init(self, farm_money, farm_workers, farm_land, harvest_per_day, goods_per_land,
-             goods_per_worker, ideal_workers, goods_price, days_harvest, wage_increment, price_increment, **_):
+    def init(self, farm_money, farm_land, harvest_per_day, goods_per_land, goods_per_worker, farm_goods,
+             goods_price, days_harvest, farm_wage_increment, farm_price_increment, num_farms, **_):
         self.create("money", farm_money)
-        self.create("workers", farm_workers)
+        self.create("farm_goods", farm_goods)
         self.land = farm_land
         self.harvest_per_day = harvest_per_day
         self.goods_per_land = goods_per_land
         self.goods_per_worker = goods_per_worker
-        self.ideal_workers = ideal_workers
         self.goods_price = goods_price
         self.days_left = days_harvest
-        self.wage_increment = wage_increment
-        self.price_increment = price_increment
+        self.wage_increment = farm_wage_increment
+        self.price_increment = farm_price_increment
         self.wage = 10
         self.farmable_land = 0
         self.goods_to_sell = 0
+        self.ideal_workers=10
 
     def grow_crops(self):
         """
@@ -45,8 +45,9 @@ class Farm(abce.Agent):
         finds the ideal number of workers to deliver the goods
          > Equal to the total number of goods divided by the days during the cycle and the goods each worker can deliver
         """
-        self.ideal_workers = int(self["farm_goods"] / (self.days_left * self.goods_per_worker)) + 1
-        self.days_left -= 1
+        self.ideal_workers = max(1, self["farm_goods"] / ((self.days_left + 1) * self.goods_per_worker))
+        self.days_left -=1
+        self.days_left = max(0, self.days_left)
 
     def determine_wage(self):
         """
@@ -65,17 +66,17 @@ class Farm(abce.Agent):
                 if self.wage < 0:
                     self.wage = 0
         else:
-            raise Exception()
+            raise Exception(self.ideal_workers - self['workers'])
 
     def transport_goods(self): # don't include this just pay workers flat price for 1 day work
         """
         Transports goods to the market. The workers are payed here
         """
         self.goods_to_sell = self["workers"] * self.goods_per_worker
-        if self.goods_to_sell > self.notreserved("farm_goods"):
+        if self.goods_to_sell > self.not_reserved("farm_goods"):
             self.goods_to_sell = self.not_reserved("farm_goods")
-            workers_needed = int(self.not_reserved("farm_goods") / self.goods_per_worker) + 1
-            fired_workers = self["workers"] - workers_needed
+            workers_needed = self.not_reserved("farm_goods") / self.goods_per_worker
+            fired_workers = max(0, self["workers"] - workers_needed)
             self.destroy("workers", fired_workers)
         self.give("people", good='money', quantity=(self['workers'] * self.wage))
 
@@ -101,9 +102,10 @@ class Farm(abce.Agent):
         Transports any remaining goods back to the farm
         """
         workers_needed = self.goods_to_sell / self.goods_per_worker
-        fired_workers = self["workers"] - workers_needed
+        fired_workers = max(0, self["workers"] - workers_needed)
         self.destroy("workers", fired_workers)
         self.give("people", good='money', quantity=(self['workers'] * self.wage))
+        self.destroy("workers")
 
     def change_price(self):
         """
@@ -114,9 +116,20 @@ class Farm(abce.Agent):
         else:
             self.goods_price += random.uniform(0, self.price_increment * self.goods_price)
 
-    def publish_vacencies(self):
-        return {"name": self.name, "number": self.ideal_num_workers, "wage": self.wage}
+    def publish_vacancies(self):
+        if self.not_reserved("money") > 2 * self.ideal_workers * self.wage:
+            return {"name": self.name, "number": self.ideal_workers, "wage": self.wage}
+        else:
+            return{"name": self.name, "number": (self.not_reserved("money") / (2 * self.wage)), "wage": self.wage}
 
     def send_prices(self):
-        self.send_envelope('people', 'price', self.price)
-        return self.price
+        self.send_envelope('people', 'price', self.goods_price)
+        return self.goods_price
+
+    def print_possessions(self):
+        """
+        prints possessions and logs money of a person agent
+        """
+        print('    ' + self.group + str(dict(self.possessions())))
+        self.log("money", self["money"])
+        self.log("workers", self["workers"])
