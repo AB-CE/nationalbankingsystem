@@ -1,5 +1,6 @@
 import abce
 import pandas as pd
+import os
 from firm import Firm
 from people import People
 from farm import Farm
@@ -12,19 +13,20 @@ params = dict(
     firm_money=2000,
     farm_money=3000,
     farm_workers=5,
-    farm_land=5000,
+    farm_land=1000,
     harvest_per_day=100,
     goods_per_land=10,
     goods_per_worker=100,
     goods_price=30,
     days_harvest=90,
+    harvest_start=7 * 30,
     maintenance_goods=1,
     reserve=30,
-    farm_goods=10000,
+    farm_goods=1000,
     farm_wage_increment=0.01,
     farm_price_increment=0.01,
 
-    num_days=2000,
+    num_days=5000,
 
     l=0.5,  # constant from CS equation
 
@@ -46,14 +48,18 @@ farms = simulation.build_agents(Farm, "farm", number=params["num_farms"], **para
 
 def main(params):
     for date in pd.date_range(start='1/1/1880', periods=params['num_days'], freq='D'):
-        simulation.time = int('%04i' % date.year + '%02i' % date.month + '%02i' % date.day)
+        simulation.time = int(('%04i' % date.year)[2:] + '%02i' % date.month + '%02i' % date.day)
 
         group_of_firms.panel_log(variables=['ideal_num_workers'], goods=['workers'])
 
 
         people.create_labour()
+        print(date.dayofyear, end='')
 
-        if 8 * 30 < date.dayofyear < 10 * 30:
+        if params['harvest_start'] == date.dayofyear:
+            farms.reset_days_left()
+        if params['harvest_start'] < date.dayofyear < params['harvest_start'] + params['days_harvest'] and date.year > 1885:
+            print('*')
             farms.harvest()
             farms.find_ideal_workers()
 
@@ -70,9 +76,12 @@ def main(params):
             farms.determine_wage()
 
         else:
+            print('.')
             farms.grow_crops()
             vacancies_list = list(group_of_firms.publish_vacancies())
             people.send_workers(vacancies_list)
+
+        farms.log_sales()
 
         group_of_firms.production()
         group_of_firms.pay_workers()
@@ -83,7 +92,7 @@ def main(params):
 
         group_of_firms.sell_goods()
         group_of_firms.determine_bounds(demand=list(demand)[0])
-        (group_of_firms + people).print_possessions()
+        (group_of_firms + people + farms).print_possessions()
         group_of_firms.determine_wage()
         group_of_firms.expand_or_change_price()
         (people + group_of_firms).destroy_unused_labor()
@@ -97,6 +106,7 @@ def main(params):
     print('done')
 
     simulation.graph()
+    os.remove(simulation.path + 'panel_people.csv')
     simulation.finalize()
 
 

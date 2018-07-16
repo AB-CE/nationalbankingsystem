@@ -185,7 +185,7 @@ class People(abce.Agent):
         Finds how many goods each person must keep in their reserve. This is such that they can consume their maintenance
         goods per day that is not the harvest.
         """
-        self.reserve = self.days_harvest * 11 * self.maintenance_goods
+        self.reserve = self.days_harvest * 3 * self.maintenance_goods
 
 
 

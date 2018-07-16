@@ -1,8 +1,8 @@
 import abce
 import random
 
-class Farm(abce.Agent):
 
+class Farm(abce.Agent):
     def init(self, farm_money, farm_land, harvest_per_day, goods_per_land, goods_per_worker, farm_goods,
              goods_price, days_harvest, farm_wage_increment, farm_price_increment, num_farms, **_):
         self.create("money", farm_money)
@@ -13,12 +13,14 @@ class Farm(abce.Agent):
         self.goods_per_worker = goods_per_worker
         self.goods_price = goods_price
         self.days_left = days_harvest
+        self.days_harvest = days_harvest
         self.wage_increment = farm_wage_increment
         self.price_increment = farm_price_increment
         self.wage = 10
         self.farmable_land = 0
         self.goods_to_sell = 0
-        self.ideal_workers=10
+        self.ideal_workers= 10
+        self.sales = 0
 
     def grow_crops(self):
         """
@@ -46,8 +48,11 @@ class Farm(abce.Agent):
          > Equal to the total number of goods divided by the days during the cycle and the goods each worker can deliver
         """
         self.ideal_workers = max(1, self["farm_goods"] / ((self.days_left + 1) * self.goods_per_worker))
-        self.days_left -=1
+        self.days_left -= 1
         self.days_left = max(0, self.days_left)
+
+    def reset_days_left(self):
+        self.days_left = self.days_harvest
 
     def determine_wage(self):
         """
@@ -87,15 +92,19 @@ class Farm(abce.Agent):
         for offer in self.get_offers("farm_goods"):
             if offer.price >= self.goods_price and self.goods_to_sell >= offer.quantity:
                 self.accept(offer)
-                self.log('sales', offer.quantity)
+                self.sales = offer.quantity
                 self.goods_to_sell -= offer.quantity
             elif offer.price >= self.goods_price and self.goods_to_sell < offer.quantity:
-                self.log('sales', self.goods_to_sell)
+                self.sales = self.goods_to_sell
                 self.accept(offer, quantity=self.goods_to_sell)
                 self.goods_to_sell = 0
             elif offer.price < self.goods_price:
                 self.reject(offer)
-                self.log('sales', 0)
+                self.sales = 0
+
+    def log_sales(self):
+        self.log('sales', self.sales)
+        self.sales = 0
 
     def transport_back(self):
         """
@@ -130,8 +139,9 @@ class Farm(abce.Agent):
         """
         prints possessions and logs money of a person agent
         """
-        print('    ' + self.group + str(dict(self.possessions())))
+        #print('    ' + self.group + str(dict(self.possessions())))
         self.log("money", self["money"])
         self.log("workers", self["workers"])
         self.log('wage_farm', self.wage)
         self.log('ideal_workers_farms', self.ideal_workers)
+        self.log('farm_goods', self['farm_goods'])
