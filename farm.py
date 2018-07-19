@@ -3,10 +3,9 @@ import random
 
 
 class Farm(abce.Agent):
-    def init(self, farm_money, farm_land, harvest_per_day, goods_per_land, goods_per_worker, farm_goods,
+    def init(self, farm_money, farm_land, harvest_per_day, goods_per_land, goods_per_worker,
              goods_price, days_harvest, farm_wage_increment, farm_price_increment, num_farms, **_):
         self.create("money", farm_money)
-        self.create("farm_goods", farm_goods)
         self.land = farm_land
         self.harvest_per_day = harvest_per_day
         self.goods_per_land = goods_per_land
@@ -48,6 +47,8 @@ class Farm(abce.Agent):
          > Equal to the total number of goods divided by the days during the cycle and the goods each worker can deliver
         """
         self.ideal_workers = max(1, self["farm_goods"] / ((self.days_left + 1) * self.goods_per_worker))
+        if self["money"] < self.ideal_workers * self.wage:
+            self.ideal_workers = self["money"] / self.wage
         self.days_left -= 1
         self.days_left = max(0, self.days_left)
 
@@ -64,7 +65,7 @@ class Farm(abce.Agent):
         if self.ideal_workers > self['workers']:
             self.wage += random.uniform(0, self.wage_increment * self.wage)
 
-        elif self.ideal_workers == self['workers']:
+        elif self.ideal_workers <= self['workers']:
             max_employees = messages[0]
             if max_employees > self.ideal_workers:
                 self.wage -= random.uniform(0, self.wage_increment * self.wage)
@@ -80,10 +81,8 @@ class Farm(abce.Agent):
         self.goods_to_sell = self["workers"] * self.goods_per_worker
         if self.goods_to_sell > self.not_reserved("farm_goods"):
             self.goods_to_sell = self.not_reserved("farm_goods")
-            workers_needed = self.not_reserved("farm_goods") / self.goods_per_worker
-            fired_workers = max(0, self["workers"] - workers_needed)
-            self.destroy("workers", fired_workers)
         self.give("people", good='money', quantity=(self['workers'] * self.wage))
+        self.destroy("workers")
 
     def sell_harvest(self):
         """
@@ -106,21 +105,21 @@ class Farm(abce.Agent):
         self.log('sales', self.sales)
         self.sales = 0
 
-    def transport_back(self):
-        """
-        Transports any remaining goods back to the farm
-        """
-        workers_needed = self.goods_to_sell / self.goods_per_worker
-        fired_workers = max(0, self["workers"] - workers_needed)
-        self.destroy("workers", fired_workers)
-        self.give("people", good='money', quantity=(self['workers'] * self.wage))
-        self.destroy("workers")
+#    def transport_back(self):
+ #       """
+  #      Transports any remaining goods back to the farm
+   #     """
+    #    workers_needed = self.goods_to_sell / self.goods_per_worker
+     #   fired_workers = max(0, self["workers"] - workers_needed)
+      #  self.destroy("workers", fired_workers)
+       # self.give("people", good='money', quantity=(self['workers'] * self.wage))
+        #self.destroy("workers")
 
     def change_price(self):
         """
         Adjusts prices based on how many goods are sold
         """
-        if self.goods_to_sell > 0:
+        if self.goods_to_sell > 0 and self.wage < self.goods_per_worker * self.goods_price:
             self.goods_price -= random.uniform(0, self.price_increment * self.goods_price)
         else:
             self.goods_price += random.uniform(0, self.price_increment * self.goods_price)
@@ -145,3 +144,19 @@ class Farm(abce.Agent):
         self.log('wage_farm', self.wage)
         self.log('ideal_workers_farms', self.ideal_workers)
         self.log('farm_goods', self['farm_goods'])
+
+    def print_possessions2(self):
+        """
+        prints possessions and logs money of a person agent
+        """
+        #print('    ' + self.group + str(dict(self.possessions())))
+        print("FARM", self.id)
+        print("money", self["money"])
+        print('farm_goods', self['farm_goods'])
+
+    def end_harvest(self):
+        """
+        At the end of harvest, farms mst destroy their produce
+        """
+        if self.days_left == 1:
+            self.destroy("farm_goods")

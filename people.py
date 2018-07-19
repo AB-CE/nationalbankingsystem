@@ -32,6 +32,7 @@ class People(abce.Agent):
         self.maintenance_goods = maintenance_goods
         self.reserve = reserve
         self.num_farms = num_farms
+        self.days_harvest = days_harvest
 
     def create_labour(self):
         """
@@ -157,17 +158,20 @@ class People(abce.Agent):
             self.log('q', q)
 
             demand_list = []
+            demand_list_norm = []
             l = self.l
 
-            # I must reflect tht they're only buying a certain number of necessaties
             I = self.not_reserved('money')
-            for farm in range(self.num_farms):  # fix systematic advantage for 0 firm
+            for farm in range(self.num_farms):
                 goods_price = float(self.price_dict['farm', farm])
                 demand = (I / q) * (q / goods_price) ** (1 / (1 - l))
                 self.buy(('farm', farm), good='farm_goods', quantity=demand, price=goods_price)
                 demand_list.append(demand)
-            self.log('total_demand', sum(demand_list))
-            return demand_list
+            for n in range(len(demand_list)):
+                demand_list_norm.append(demand_list[n] * (self.population * (self.maintenance_goods + self.reserve) - self["farm_goods"]) / sum(demand_list))
+            self.log('total_demand_farm', sum(demand_list_norm))
+            print('total demand farm', demand_list_norm)
+            return demand_list_norm
 
     def consume_farm_goods(self):
         """
@@ -186,6 +190,9 @@ class People(abce.Agent):
         goods per day that is not the harvest.
         """
         self.reserve = self.days_harvest * 3 * self.maintenance_goods
+
+    def print_farm(self):
+        print(self["farm_goods"])
 
 
 
