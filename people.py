@@ -47,7 +47,7 @@ class People(abce.Agent):
         self.destroy('workers')
 
     def consumption(self):
-        self.log("consumption", self["produce"])
+        #self.log("consumption", self["produce"])
         self.destroy("produce")
 
     def find_q(self):
@@ -83,7 +83,7 @@ class People(abce.Agent):
                 firm_id = the number of the firm the people are trading with
         """
         q = self.find_q()
-        self.log('q', q)
+        #self.log('q', q)
 
         demand_list = []
         l = self.l
@@ -94,7 +94,7 @@ class People(abce.Agent):
             demand = (I / q) * (q / firm_price) ** (1 / (1 - l))
             self.buy(('firm', firm), good='produce', quantity=demand, price=firm_price)
             demand_list.append(demand)
-        self.log('total_demand', sum(demand_list))
+        #self.log('total_demand', sum(demand_list))
         return demand_list
 
     def send_workers(self, vacancies_list):
@@ -115,21 +115,23 @@ class People(abce.Agent):
         norm = sum(distances)
 
         for vacancies, dist in zip(vacancies_list, distances):
-            firm = vacancies["name"]
+            firm_or_farm = vacancies["name"]
+
             willing_workers = self.population / norm * dist
+            #print(firm_or_farm, willing_workers)
             if vacancies["number"] <= willing_workers:
-                self.send(firm, 'max_employees', willing_workers)
-                self.give(firm, good='workers', quantity=vacancies["number"])
+                self.send(firm_or_farm, 'max_employees', willing_workers)
+                self.give(firm_or_farm, good='workers', quantity=vacancies["number"])
             else:
-                self.give(firm, good='workers', quantity=willing_workers)
+                self.give(firm_or_farm, good='workers', quantity=willing_workers)
 
     def print_possessions(self):
         """
         prints possessions and logs money of a person agent
         """
         print('    ' + self.group + str(dict(self.possessions())))
-        self.log("money", self["money"])
-        self.log("workers", self["workers"])
+        #self.log("money", self["money"])
+        #self.log("workers", self["workers"])
 
     def getvalue(self):
         """
@@ -169,7 +171,7 @@ class People(abce.Agent):
                 demand_list.append(demand)
             for n in range(len(demand_list)):
                 demand_list_norm.append(demand_list[n] * (self.population * (self.maintenance_goods + self.reserve) - self["farm_goods"]) / sum(demand_list))
-            self.log('total_demand_farm', sum(demand_list_norm))
+            #self.log('total_demand_farm', sum(demand_list_norm))
             print('total demand farm', demand_list_norm)
             return demand_list_norm
 

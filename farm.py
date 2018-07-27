@@ -6,6 +6,7 @@ class Farm(abce.Agent):
     def init(self, farm_money, farm_land, harvest_per_day, goods_per_land, goods_per_worker,
              goods_price, days_harvest, farm_wage_increment, farm_price_increment, num_farms, **_):
         self.create("money", farm_money)
+        self.original_money = farm_money
         self.land = farm_land
         self.harvest_per_day = harvest_per_day
         self.goods_per_land = goods_per_land
@@ -102,18 +103,11 @@ class Farm(abce.Agent):
                 self.sales = 0
 
     def log_sales(self):
+        """
+        logs the number of sales
+        """
         self.log('sales', self.sales)
         self.sales = 0
-
-#    def transport_back(self):
- #       """
-  #      Transports any remaining goods back to the farm
-   #     """
-    #    workers_needed = self.goods_to_sell / self.goods_per_worker
-     #   fired_workers = max(0, self["workers"] - workers_needed)
-      #  self.destroy("workers", fired_workers)
-       # self.give("people", good='money', quantity=(self['workers'] * self.wage))
-        #self.destroy("workers")
 
     def change_price(self):
         """
@@ -125,12 +119,21 @@ class Farm(abce.Agent):
             self.goods_price += random.uniform(0, self.price_increment * self.goods_price)
 
     def publish_vacancies(self):
+        """
+        Adds the number of vacancies available per farm to a list that the people then use to send workers to the farm
+        """
         if self.not_reserved("money") > 2 * self.ideal_workers * self.wage:
+            print("name:", self.name, "number", self.ideal_workers, "wage", self.wage)
             return {"name": self.name, "number": self.ideal_workers, "wage": self.wage}
         else:
+            print("name", self.name, "number", (self.not_reserved("money") / (2 * self.wage)), "wage", self.wage)
             return{"name": self.name, "number": (self.not_reserved("money") / (2 * self.wage)), "wage": self.wage}
 
+
     def send_prices(self):
+        """
+        Sends a message containing the price of the farm goods to the people
+        """
         self.send_envelope('people', 'price', self.goods_price)
         return self.goods_price
 
@@ -160,3 +163,7 @@ class Farm(abce.Agent):
         """
         if self.days_left == 1:
             self.destroy("farm_goods")
+
+    def redistribute_profits(self, days):
+        if self["money"] > self.original_money:
+            self.give("farmers", good='money', quantity=((self['money'] - self.original_money) / days))

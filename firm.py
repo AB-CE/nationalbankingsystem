@@ -136,6 +136,8 @@ class Firm(abce.Agent):
             elif offer.price < self.price:
                 self.reject(offer)
                 self.log('sales', 0)
+            else:
+                raise Exception()
 
     def pay_workers(self):
         """
@@ -174,6 +176,7 @@ class Firm(abce.Agent):
 
     def send_prices(self):
         self.send_envelope('people', 'price', self.price)
+        self.send_envelope('farmers', 'price', self.price)
         return self.price
 
     def print_possessions(self):
